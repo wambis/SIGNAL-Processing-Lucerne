@@ -105,6 +105,7 @@ wind_speed: False
 precipitation: False
 #plot the seismogram 
 waveform: True
+pressure_waveform: True
 #Plot Envelop
 envelope: False
 #plot the seismic power
@@ -138,4 +139,4 @@ bandpass_spec: '0.02-0.022-200-1000'
 ########################
 #bandpass: '60-70-100-120'
 ######################
-PARAMSDICT: {'envelope':['Spectral Envelope (m/s²)','m'],  'waveform': ['Acc (µm/s²)','k'], 'seismic_power': ['Power (dB)','k'] ,'spectrogram': ['Frequency [Hz]','RdYlBu_r'],  'avg_BS': ['1D-Backscatter', 'green'], 'backscatter': ['Backscattering', 'jet'] , 'pressure':['Pressure (bar)','blue'],'velocity': ['Velocity (m/s)', 'k'], 'veldir2D': ['degrees_CW_from_N', 'CMRmap'],  'vertical_vel': ['Velocity (m/s)', 'c'],'velocity2D': ['Velocity (m/s)', 'jet'], 'temperature': ['Temperature (°C)', 'r'], 'Temperature2D': ['Temperature (°C)', 'gist_heat_r'], 'surface_tracking': ['Bottom Track (m)', 'b'],   'tke': ['TKE (J/Kg)', 'pink'], 'discharge': ['Discharge (m³/s)','blueviolet'],'wind_speed':['W_speed (km/h)', 'teal'], 'wind_direction':['Wind-Dir (°C)', 'k'], 'Atm_pressure_QFE': ['Atm_Pressure (bar)','seagreen'],  'Atm_pressure_QFF': ['Atm_Pressure (bar)','royalblue'],  'precipitation': ['Precipitation (mm)','blue']}
+PARAMSDICT: {'envelope':['Spectral Envelope (m/s²)','m'],  'waveform': ['Acc (µm/s²)','k'],'pressure_waveform': ['Pressure (Pa)','k'], 'seismic_power': ['Power (dB)','k'] ,'spectrogram': ['Frequency [Hz]','RdYlBu_r'],  'avg_BS': ['1D-Backscatter', 'green'], 'backscatter': ['Backscattering', 'jet'] , 'pressure':['Pressure (bar)','blue'],'velocity': ['Velocity (m/s)', 'k'], 'veldir2D': ['degrees_CW_from_N', 'CMRmap'],  'vertical_vel': ['Velocity (m/s)', 'c'],'velocity2D': ['Velocity (m/s)', 'jet'], 'temperature': ['Temperature (°C)', 'r'], 'Temperature2D': ['Temperature (°C)', 'gist_heat_r'], 'surface_tracking': ['Bottom Track (m)', 'b'],   'tke': ['TKE (J/Kg)', 'pink'], 'discharge': ['Discharge (m³/s)','blueviolet'],'wind_speed':['W_speed (km/h)', 'teal'], 'wind_direction':['Wind-Dir (°C)', 'k'], 'Atm_pressure_QFE': ['Atm_Pressure (bar)','seagreen'],  'Atm_pressure_QFF': ['Atm_Pressure (bar)','royalblue'],  'precipitation': ['Precipitation (mm)','blue']}

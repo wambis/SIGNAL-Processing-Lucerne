@@ -6,7 +6,6 @@ from yaml.loader import SafeLoader
 import os, sys, math
 import obspy
 from obspy import read, read_inventory
-import matplotlib.pyplot as plt 
 from glob import glob
 from scipy import stats
 from scipy.stats import norm
@@ -212,7 +211,7 @@ def PlotEnvelop(ax, Date_of_Day, param, tr_filt, linewidth=1.2,  **PARAMSDICT):
 
 
 #def read_mseed(FILE):
-def read_mseed(Date_of_Day, FILE, xmlFile, bandpass):
+def read_mseed(Date_of_Day, FILE, xmlFile, bandpass, Pressure = None):
     #get the stream by reading the mseed file
     st      = read(FILE)
     #read the inventory
@@ -227,10 +226,13 @@ def read_mseed(Date_of_Day, FILE, xmlFile, bandpass):
     f3      = 1./float(pds[1]);  f4 = 1./float(pds[0])
     #f1 = 0.001; f2 = 0.00125 ; f3 = 0.002; f4 = 0.0025
     pre_filt = [f1, f2, f3, f4]
-    #Remove instrument response
-    st.remove_response(inventory=inv, pre_filt=pre_filt, output="ACC",water_level=60)
-    #st.remove_response(inventory=inv, pre_filt=pre_filt, output="VEL",water_level=60)
-    #st.remove_response(inventory=inv, pre_filt=pre_filt, output="DEF",water_level=60)
+    if(Pressure):
+        st.remove_response(inventory=inv, pre_filt=pre_filt, output="DEF",water_level=60)
+    else:
+        #Remove instrument response
+        st.remove_response(inventory=inv, pre_filt=pre_filt, output="ACC",water_level=60)
+        #st.remove_response(inventory=inv, pre_filt=pre_filt, output="VEL",water_level=60)
+
     #get the trace from the stram
     for tr in st:
         #get the parameters of the trace
@@ -591,7 +593,7 @@ def Plot_fig(ax, time, data, param, plot_bigger,  **PARAMSDICT):
         ax.plot(time, data, lw=6.0, linestyle ="-", color = color, alpha =0.5,label = param.title())
     else:
         #ax.plot(time, data, lw=1.0, linestyle ="-", color = color, alpha =1.0, label = param.title())
-        ax.plot(time, data, lw=0.2, linestyle ="-", color = color, alpha =0.9, label = param.title())
+        ax.plot(time, data, lw=0.4, linestyle ="-", color = color, alpha =0.9, label = param.title())
 
     #get the minimum and the maximum of yaxis
     ymin, ymax    = ax.get_ylim()
@@ -1010,11 +1012,12 @@ wind_direction  =    Fig_params['wind_direction']
 #Plot the 2D velocity
 velocity2D = Fig_params['velocity2D']
 #Plot the seismic Waveform 
-waveform       = Fig_params['waveform']
+waveform          = Fig_params['waveform']
+pressure_waveform = Fig_params['pressure_waveform']
 #plot the seismic power
-seismic_power  = Fig_params['seismic_power']
+seismic_power     = Fig_params['seismic_power']
 #Plot the seismic Envelope
-envelope       = Fig_params['envelope']
+envelope         = Fig_params['envelope']
 #Plot seismic spectrogram
 spectrogram    = Fig_params['spectrogram']
 #Grab the bandpass
@@ -1138,27 +1141,25 @@ fig_size  = (Fig_params['fig_width'], Fig_params['fig_height'])
 fig, axs  = plt.subplots(nfigs, 1, sharex = False, figsize = fig_size)
 
 
-#print(PARAMSDICT)
-#######Plot the discharge ##############
-#plot_discharge(ax1,hours_of_day, data_day, starttime, Remove_frame)
-
+#### Plot the envolop ##############
+if(envelope):
+    #set the parameter
+    param            = "envelope"
+    #get the seismogram from mseedFile
+    time, tr, Title  = read_mseed(STARTDATE, mseedFile, Response_File, bandpass_spec)
+    #get the parameter, the index of the corresponding axis, and the color
+    _ , color, ix    = PARAMSDICT[param]
+    #Plot the figure by calling the plotting
+    PlotEnvelop(axs[ix], STARTDATE, param, tr, linewidth=1.2,  **PARAMSDICT)
+#plot seismic waveform
 if(waveform):
     #set the parameter
     param      = "waveform"
-   # if(spectrogram):
-   #     bandpass   = bandpass_spec
-   #     #bandpass   = bandpass
-   #     lw = 0.3
-   # else:
-   #     lw = 0.8
     #get the seismogram from mseedFile
     time, tr, Title = read_mseed(STARTDATE, mseedFile, Response_File, bandpass)
     #get the parameter, the index of the corresponding axis, and the color
-    #print(PARAMSDICT[param] )
-    #exit()
     _ , color, ix  = PARAMSDICT[param]
     #Set the Title
-    #basename_new = os.path.basename.split('_')
     #label        = '%s   %s             BP: %s s'%(basename_new[0], basename_new[1], bandpass)
     #label        = '%s       %s    '%(basename_new[0], basename_new[1])
     #label        = '%s '%(bandpass)
@@ -1169,17 +1170,20 @@ if(waveform):
     data  =  tr.data * 1e+6
     #time = time.astype("datetime64[ns]")
     Plot_fig(axs[ix], time, data, param, False, **PARAMSDICT)
-    #Plot_fig(ax, time, data, param, plot_bigger,  **PARAMSDICT)
-    #Plot_fig(axs[ix], time_new, data, param, False, **PARAMSDICT)
-if(envelope):
+#######################################################
+if(pressure_waveform):
     #set the parameter
-    param            = "envelope"
+    param           = "pressure_waveform"
     #get the seismogram from mseedFile
-    time, tr, Title  = read_mseed(STARTDATE, mseedFile, Response_File, bandpass_spec)
+    time, tr, Title = read_mseed(STARTDATE, mseedFile, Response_File, bandpass, Pressure = True)
     #get the parameter, the index of the corresponding axis, and the color
-    _ , color, ix    = PARAMSDICT[param]
-    #Plot the figure by calling the plotting
-    PlotEnvelop(axs[ix], STARTDATE, param, tr, linewidth=1.2,  **PARAMSDICT)
+    _ , color, ix   = PARAMSDICT[param]
+    #Set the Title
+    label           = Title
+    axs[ix].set_title(label, loc='center', pad=None)
+    #Plot the figure by calling the plotting function, plot_twinx
+    Plot_fig(axs[ix], time, data, param, False, **PARAMSDICT)
+
 if(seismic_power):
     #set the parameter
     param            = "seismic_power"
@@ -1193,7 +1197,10 @@ if(spectrogram):
     #set the parameter
     param            = "spectrogram"
     #get the seismogram from mseedFile
-    time, tr, Title  = read_mseed(STARTDATE, mseedFile, Response_File, bandpass_spec)
+    if(pressure_waveform):
+        time, tr, Title  = read_mseed(STARTDATE, mseedFile, Response_File, bandpass_spec, Pressure=True)
+    else:
+        time, tr, Title  = read_mseed(STARTDATE, mseedFile, Response_File, bandpass_spec)
     #get the parameter, the index of the corresponding axis, and the color
     _ , color, ix    = PARAMSDICT[param]
     #Plot the figure by calling the plotting function of 2D Matrix
