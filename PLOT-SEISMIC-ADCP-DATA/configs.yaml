@@ -75,7 +75,7 @@ vertical_vel: False
 #Do want to plot water Pressure?
 pressure: True
 #Plot 2D current direction
-veldir2D: True
+veldir2D: False
 # Plot the wind direction
 wind_direction: False
 #Do want to plot Atmospheric Pressure?
@@ -84,34 +84,34 @@ Atm_pressure_QFF: False   # Mean pressure at the sea level by taking into accoun
 #Do want to plot water Temperature?
 temperature: False
 #2D Temperature
-Temperature2D: True
+Temperature2D: False
 #Do want to plot the Dischage into the basin ?
 discharge: False
 #Do want to plot the Turbidity into the basin ?
 turbidity: False
 #Plot the echo, backscatter
-avg_BS: False
+avg_BS: True
 #Do you want to plot the 2D backscatter
 backscatter: False
 #Do you want to plot the 2D Velocity
-velocity2D: True
+velocity2D: False
 #Do want to plot the Turbidity Kenetic Energy ?
 tke: False
 #Tracking surface
 surface_tracking: False
 #Wind speed
-wind_speed: False
+wind_speed: True
 #Precipitation
 precipitation: False
 #plot the seismogram 
 waveform: True
-pressure_waveform: True
+pressure_waveform: False
 #Plot Envelop
-envelope: False
+envelope: True
 #plot the seismic power
 seismic_power: True
 #plot the seismic spectrogram?
-spectrogram: False
+spectrogram: True
 #Do want to plot water density ?
 #density: False
 #DO you want to visualize the data correlation with depth (the quality of the data with depth)? if yes set to True if no set to False
