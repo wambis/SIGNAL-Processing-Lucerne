@@ -1,0 +1,54 @@
+#parameter for histogram plot
+#Path of Seimic data
+mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed', 
+              'DATASELECT/STATION03/XJ_MUS03_HH3-2023-10-23.mseed', 
+             'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-23.mseed'}
+#
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed',
+#             'DATASELECT/STATION04/XJ_MUS04_HH2-2023-10-23.mseed',
+#             'DATASELECT/STATION05/XJ_MUS05_HH2-2023-10-23.mseed',
+#             'DATASELECT/STATION06/XJ_MUS06_HH2-2023-10-23.mseed',
+#             'DATASELECT/STATION07/XJ_MUS07_HH2-2023-10-23.mseed'}
+#Response file
+#Response_File: 'RESPOSE-FILE.XML/MUS03_response.xml'
+Response_File: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+#
+STARTDATE: "2023-10-23"
+#set the start and the endtime for noise
+#heure:minutes:seconds
+startime_noise: "12:30:00"
+#startime_noise: "11:00:00"
+endtime_noise:  "14:15:00"
+#set the start and the endtime for signal
+startime_signal: "14:24:00"
+endtime_signal:  "14:45:00"
+#endtime_signal:  "14:55:00"
+#endtime_signal:  "15:00:00"
+#Plot Options 
+Remove_frame: True
+#Calculate the signal_to_noise ratio
+signal_to_noise_r: True
+#Plot Options
+#plot the seismogram 
+waveform: True
+pressure_waveform: False
+#Plot Envelop
+#plot the seismic spectrogram?
+#Provido the beam number on which you want to visualize the data correlation
+#Set the space between the figures
+#fig_space: 0.15
+fig_space: 0.19
+#fig_space: 0.25
+#set the figure size
+#fig_width: 12
+#fig_height: 11
+fig_width: 12
+fig_height: 13
+#Set the bandpass
+#bandpass: '35-40-85-100'
+#
+#Good Frequenci STATION01
+#bandpass: '38-45-80-100'
+bandpass: '0.02-0.022-200-1000'
+#Just removed instrument response
+bandpass_spec: '0.02-0.022-200-1000'
