@@ -1,0 +1,181 @@
+#parameter for histogram plot
+#Path of the data
+ADCP_FILE_NAME_UP: 'DATASELECT/MUO2_UP_11_23.000'
+ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_11_23.000'
+#Discharge file name
+FILE_DISCH: 'DATASELECT/Discharge_June_Dec2023_NEW.txt'
+#Discharge file name
+FILE_TURB: 'DATASELECT/ADCP2_DOWN_11_EchoAmp.txt'
+#Lake level File
+FILE_LAKE: 'DATASELECT/Lake-Level-Lucerne-2023-2024.csv'
+#METO FILE
+FILE_METEO: 'DATASELECT/DATA_ARRANGE_ALT.csv'
+#FILE_METEO: 'DATASELECT/DATA_ARRANGE_GES.csv'
+#Temperature file
+FILE_TEMPEB: 'DATASELECT/DataTemperatureMooringB.json'
+FILE_TEMPEA: 'DATASELECT/DataTemperatureMooringA.json'
+#Seimic file
+mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-11-06.mseed'
+#mseedFile: 'DATASELECT/STATION07/XJ_MUS07_HH2-2023-10-23.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-20.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-20.mseed'
+#Hydrophone data
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-23.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-20.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-11-06.mseed'
+
+#mseedFile: 'DATASELECT/STATION07/XJ_MUS07_HDH-2023-10-23.mseed'
+#mseedFile: 'DATASELECT/STATION05/XJ_MUS05_HDH-2023-10-23.mseed'
+#mseedFile: 'DATASELECT/STATION04/XJ_MUS04_HDH-2023-10-23.mseed'
+
+#mseedFile: 'DATASELECT/STATION06/XJ_MUS06_HH2-2023-11-02.mseed'
+#
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-20.mseed'
+
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH3-2023-11-04.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH3-2023-11-06.mseed'
+#
+#Response file
+Response_File: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+
+#Response_File: 'RESPOSE-FILE.XML/MUS07_response.xml'
+#Response_File: 'RESPOSE-FILE.XML/MUS06_response.xml'
+#
+#Plot Options 
+Remove_frame: True
+####################
+ADCP_DOWN: True
+ADCP_UP: False
+#Plot Options
+#Mooring B
+
+#Set the SEAFLOOR DEPTH at the location of the ADCP
+###For the deploiement from `2023-09-16` to `2023-11-21` #########
+#SEAFLOOR_DEPTH: 120.0 # in meter
+####Set the ADCP DEPTH
+#ADCP_UP_HEIGTH_FROM_LAKEBED: 20.9    #in meter
+#ADCP_DOWN_HEIGTH_FROM_LAKEBED: 20.0  #in meter
+##########################################
+SEAFLOOR_DEPTH: 144.0 # in meter
+###Set the ADCP DEPTH
+ADCP_UP_HEIGTH_FROM_LAKEBED: 23.9    #in meter
+ADCP_DOWN_HEIGTH_FROM_LAKEBED: 23.0  #in meter
+#
+#Set the SEAFLOOR DEPTH at the location of the ADCP
+###For the deploiement from `2023-11-21` to `2024-03-06` #########
+#SEAFLOOR_DEPTH: 100.0 # in meter
+###Set the ADCP DEPTH
+#ADCP_UP_HEIGTH_FROM_LAKEBED: 34.3    #in meter
+#ADCP_DOWN_HEIGTH_FROM_LAKEBED: 23.9  #in meter
+#
+#For the deploiement from `2024-03-21` to `2024-06-07` ##########
+#SEAFLOOR_DEPTH: 97.0 # in meter
+###Set the ADCP DEPTH
+#ADCP_UP_HEIGTH_FROM_LAKEBED: 33.5    #in meter
+#ADCP_DOWN_HEIGTH_FROM_LAKEBED: 32.6  #in meter
+#DO you want to visualize the data parameters? if yes set to True if no set to False
+##Set the time in the following format YYYY-MM-DD 
+#
+STARTDATE: "2023-10-23"  
+#ENDDATE:   "2023-10-26"
+ENDDATE:   "2023-10-23"
+#STARTDATE: "2023-10-20"  
+#ENDDATE: "2023-10-20"
+#STARTDATE: "2023-11-02"
+#STARTDATE: "2023-11-06"  
+#ENDDATE: "2023-11-06"
+#####Set the ending time
+#ENDDATE: "2023-11-02"
+#Make your plot bigger
+plot_bigger: True
+#Parameter to plot Horizontal velocity, this actually the Horizontal velocty
+velocity_up: False
+velocity_down: False
+#Parameter to plot Vertical  Velocity, this actually the Vertical velocty given the componant w
+vertical_vel: False
+#Do want to plot water Pressure?
+pressure_up: False
+pressure_down: False
+#Plot 2D current direction
+veldir2D_UP: True
+veldir2D_DOWN: True
+# Plot the wind direction
+wind_direction: False
+#Do want to plot Atmospheric Pressure?
+Atm_pressure_QFE: False     # which is the pressure measure at the station
+Atm_pressure_QFF: False   # Mean pressure at the sea level by taking into account the actual Temperature
+#Do want to plot water Temperature?
+temperature_up: False
+temperature_down: False
+#2D Temperature
+Temperature2D_MA: True
+Temperature2D_MB: True
+#Do want to plot the Dischage into the basin ?
+discharge: False
+#Do want to plot the Turbidity into the basin ?
+turbidity: False
+#Plot the echo, backscatter
+avg_BS: False
+#Do you want to plot the 2D backscatter
+backscatter: False
+#Do you want to plot the 2D Velocity
+velocity2D_UP: True
+velocity2D_DOWN: True
+#Do want to plot the Turbidity Kenetic Energy ?
+tke: False
+#Tracking surface
+surface_tracking: False
+#Check if the user want to plot Lake level
+Lake_Level: False
+#Wind speed
+wind_speed: False
+#Precipitation
+precipitation: False
+#plot the seismogram 
+waveform: True
+pressure_waveform: False
+#Plot Envelop
+envelope: False
+#plot the seismic power
+seismic_power: True
+#plot the seismic spectrogram?
+spectrogram: False
+#Do want to plot water density ?
+#density: False
+#DO you want to visualize the data correlation with depth (the quality of the data with depth)? if yes set to True if no set to False
+#Ensemble Interval (s) = "600.00"
+#To average the data into time bins, we need the parmeter below
+#1) n_bin which represents the number of data points in each ensemble, 
+#2) here our enseblme happen every 600s and  the frequency is fs = 0.001668, so n_bin = fs* 600 = 1
+n_bin: 1
+#Provido the beam number on which you want to visualize the data correlation
+#Set the space between the figures
+#fig_space: 0.1
+fig_space: 0.15
+#fig_space: 0.18
+#fig_space: 0.25
+#fig_space: 0.32
+#fig_space: 0.4
+#set the figure size
+#fig_width: 12
+#fig_height: 11
+fig_width: 12
+fig_height: 13
+#Set the bandpass
+#fig_width: 14
+#fig_height: 14
+#bandpass: '35-40-85-100'
+#
+#Good Frequenci STATION01
+#bandpass: '38-45-80-100'
+bandpass: '0.02-0.022-200-1000'
+#bandpass: '0.5-1.0-200-1000'
+#Just removed instrument response
+bandpass_spec: '0.02-0.022-200-1000'
+#
+########################
+#bandpass: '60-70-100-120'
+#gist_heat_r
+######################
+PARAMSDICT: {'wind_speed':['Wind speed (m/s)', 'teal'], 'Lake_Level':['Lake Level (m a.s.l)', 'teal'], 'envelope':['Envelope (m/s²)','m'], 'waveform': ['µm/s²','k'], 'pressure_waveform': ['Pressure (Pa)','k'], 'seismic_power': ['Power (dB)','k'] ,'spectrogram': ['Freq [Hz]','RdYlBu_r'],   'backscatter': ['Backscattering', 'jet'] , 'avg_BS': ['1D-Backscatter', 'green'],'pressure_up':['Pressure (bar)','blue'], 'pressure_down':['Pressure (bar)','blue'], 'velocity_up': ['Vel (m/s)', 'k'],'velocity_down': ['Vel (m/s)', 'k'], 'vertical_vel': ['Vel (m/s)', 'c'],'velocity2D_UP': ['Vel (m/s)', 'RdYlBu_r'], 'velocity2D_DOWN': ['Vel (m/s)', 'RdYlBu_r'], 'veldir2D_UP': ['degrees_CW_from_N', 'CMRmap'], 'veldir2D_DOWN': ['degrees_CW_from_N', 'CMRmap'],  'discharge': ['Discharge (m³/s)','blueviolet'],'temperature_up': ['Temp (°C)', 'r'], 'temperature_down': ['Temp (°C)', 'r'],'Temperature2D_MA': ['Temp (°C)', 'Reds'],'Temperature2D_MB': ['Temp (°C)', 'Reds'], 'surface_tracking': ['Bottom Track (m)', 'b'],   'tke': ['TKE (J/Kg)', 'pink'],  'wind_direction':['Wind-Dir (°C)', 'k'], 'Atm_pressure_QFE': ['Atm_Pressure (bar)','seagreen'],  'Atm_pressure_QFF': ['Atm_Pressure (bar)','royalblue'],  'precipitation': ['Precipitation (mm)','blue']}
