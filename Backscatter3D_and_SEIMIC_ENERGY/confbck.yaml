@@ -1,0 +1,61 @@
+#parameter for histogram plot
+#Path of the data
+ADCP_FILE_NAME_UP: 'DATASELECT/MUO2_UP_11_23.000'
+ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_11_23.000'
+#####################
+mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-20.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH3-2023-10-23.mseed'
+xmlFile: 'RESPOSE-FILE.XML/MUS03_response.xml'
+######################################
+#ADCP_FILE_NAME: 'DATASELECT/MUO2_DOWN_11_23.000'
+#ADCP_FILE_NAME = 'DATASELECT/MUO2_UP_11_23.000'
+#Discharge file name
+#Plot Options 
+####################
+ADCP_DOWN: True
+#Plot Options
+#set the depth index you want to plot, that from 0 -depth_idx
+#depth_idx: 20
+depth_idx: 22
+#depth_idx: 23
+#set the type of visualization vertcal or horizontal
+VERTICAL_SLIDES: True
+#Mooring B
+#Set the SEAFLOOR DEPTH at the location of the ADCP
+###For the deploiement from `2023-09-16` to `2023-11-21` #########
+SEAFLOOR_DEPTH: 144.0 # in meter
+###Set the ADCP DEPTH
+ADCP_UP_HEIGTH_FROM_LAKEBED: 23.9    #in meter
+ADCP_DOWN_HEIGTH_FROM_LAKEBED: 23.0  #in meter
+#
+#DO you want to visualize the data parameters? if yes set to True if no set to False
+##Set the time in the following format YYYY-MM-DD 
+TARGETDATE: "2023-10-23"  
+#TARGETDATE: "2023-11-02"
+#####Set the ending time
+#Make your plot bigger
+plot_bigger: True
+#Do you want to plot the 2D backscatter
+backscatter3D: True
+#Do you want to plot the 2D Velocity
+#Do want to plot the Turbidity Kenetic Energy ?
+#DO you want to visualize the data correlation with depth (the quality of the data with depth)? if yes set to True if no set to False
+#Ensemble Interval (s) = "600.00"
+#To average the data into time bins, we need the parmeter below
+#1) n_bin which represents the number of data points in each ensemble, 
+#2) here our enseblme happen every 600s and  the frequency is fs = 0.001668, so n_bin = fs* 600 = 1
+##########
+bandpass: '0.02-0.022-200-1000'
+n_bin: 1
+#Set the space between the figures
+#fig_space: 0.15
+fig_space: 0.25
+#fig_space: 0.32
+#fig_space: 0.4
+#set the figure size
+fig_width: 12
+fig_height: 11
+#Set the bandpass
+######################
+PARAMSDICT: {'backscatter3D': ['Frequency [Hz]','RdYlBu_r'], 'veldir2D': ['degrees_CW_from_N', 'CMRmap_r']}
