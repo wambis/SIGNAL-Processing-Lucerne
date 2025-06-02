@@ -1,0 +1,72 @@
+#parameter for histogram plot
+#Path of Seimic data
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed', 
+#              'DATASELECT/STATION03/XJ_MUS03_HH3-2023-10-23.mseed', 
+#             'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-23.mseed'}
+#
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-27.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-28.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-29.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-30.mseed'}
+####################
+
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-27.mseed'}
+#             
+mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-27.mseed',
+             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-28.mseed'}
+#Response file
+#Response_File: 'RESPOSE-FILE.XML/MUS03_response.xml'
+Response_File: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+#
+#Path of the data
+ADCP_FILE_NAME_UP: 'DATASELECT/MUO2_UP_2023-08-16_to_2023-11-14.38100'
+ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_2023-08-16_to_2023-11-14.8315'
+#ADCP parameter to plot
+param_adpc: "dlnEcho"
+#########
+STARTDATE: "2023-10-23"
+#Plot Options 
+Remove_frame: True
+#Plot Options
+Pressure: True
+#plot the seismogram 
+waveform: False
+#############
+power_energy : True
+pressure_waveform: False
+#Plot Envelop
+#plot the seismic spectrogram?
+#%%%%%%%%%%%%%%% Set up ADCP %%%%%%%%%%%%%%%%%%%%%
+ADCP_UP: True
+ADCP_DOWN: True
+#set the depth index you want to plot, that from 0 -depth_idx
+#Mooring B
+#Set the SEAFLOOR DEPTH at the location of the ADCP
+###For the deploiement from `2023-09-16` to `2023-11-21` #########
+SEAFLOOR_DEPTH: 144.0 # in meter
+###Set the ADCP DEPTH
+ADCP_UP_HEIGTH_FROM_LAKEBED: 23.9    #in meter
+ADCP_DOWN_HEIGTH_FROM_LAKEBED: 23.0  #in meter
+#Provido the beam number on which you want to visualize the data correlation
+#Set the space between the figures
+fig_space: 0.02
+#fig_space: 0.19
+#fig_space: 0.25
+#set the figure size
+#fig_width: 12
+#fig_height: 11
+fig_width: 16
+fig_height: 13
+#Dictionary:
+PARAMSDICT: {'ADCP_UP': ['dln(Echo)', 'RdYlBu_r'], 'ADCP_DOWN': ['dln(Echo)', 'RdYlBu_r'], 'power_energy': ['Power (dB)','k'], 
+              'waveform': [ 'Pressure (Pa)','k']}
+# 'pressure_waveform': ['Pressure (Pa)','k'] 
+#µm/s²
+#Set the bandpass
+#bandpass: '35-40-85-100'
+#
+#Good Frequenci STATION01
+#bandpass: '38-45-80-100'
+bandpass: '0.02-0.022-200-1000'
+#Just removed instrument response
+bandpass_spec: '0.02-0.022-200-1000'
