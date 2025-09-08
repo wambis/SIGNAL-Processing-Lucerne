@@ -173,10 +173,13 @@ def PlotEnvelop(ax, Date_of_Day, param, tr_filt, linewidth=1.2,  **PARAMSDICT):
     date_rng      = pd.date_range(start= Date_of_Day, freq='%ds'%(sampling_rate), periods = data.size)
     #change the date_rng to numpy
     time          = date_rng.to_numpy()
+    #get the start and the endtime
+    tstart, tend  =  start_endtime(time)
     #Envelope of filtered data
     data_envelope = obspy.signal.filter.envelope(tr_filt.data)
     #Plot the amplitude spectrum
-    ax.plot(time, data_envelope, lw = linewidth, linestyle ="-", color = color, alpha =0.5, label = 'Spectral %s'%(param))
+    #ax.plot(time, data_envelope, lw = linewidth, linestyle ="-", color = color, alpha =0.5, label = 'Spectral %s'%(param))
+    ax.plot(time, data_envelope, lw = linewidth, linestyle ="-", color = color, alpha =0.5, label = 'Envelope')
     #Fill the space between the Figure and the x-xais
     #ax.fill_between(time, data_envelope, color = 'r', alpha = 0.3)
     ax.fill_between(time, data_envelope, color = color, alpha = 0.3)
@@ -198,7 +201,14 @@ def PlotEnvelop(ax, Date_of_Day, param, tr_filt, linewidth=1.2,  **PARAMSDICT):
     #if(float(ymax) < 0.01):
 #        ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
     #Add the legend
-    ax.legend(loc="upper left")
+    #ax.legend(loc="upper left")
+    #number of vertical lines for grid
+#    locations = verical_grid()
+#    ax.xaxis.set_major_locator(locations)
+#    #Make the grid of the axis
+#    ax.grid(visible = True, axis = "x", alpha = 0.7)
+    #Set ylim of x-axis
+    ax.set_xlim(tstart, tend)
     #Set label
     #disable ticks on  x-axis
     ax.set_xticklabels([])
@@ -298,7 +308,7 @@ def Extract_df_list(df,  Tlist, param):
         #Loop over the list of the time
         P  = np.concatenate([np.nanmean(df.velds.w.sel(time = ti), axis =0) for ti in Tlist])
         T  = np.concatenate([df.velds.w.sel(time = ti)['time'] for ti in Tlist])
-    elif(param=="turbidity"):
+    elif(param=="turbidity" or param=="avg_BS"):
         #make the average on all the 4 beams, NB the key word here is amp
         df_beam_avg = np.mean(df.amp, axis = 0) 
     #    #Loop over the list of the time
@@ -585,8 +595,11 @@ def hist_nbin(data):
 #Define function
 def Plot_fig(ax, time, data, param, plot_bigger,  **PARAMSDICT):
     ##Get the parameters
+    fsize = 12
     ylabel, color, ix = PARAMSDICT[param]
     #ax.plot(time, data, kwargs)
+    #get the start and the endtime
+    tstart, tend  =  start_endtime(time)
     #Check the user need the plot to be bigger
     if(plot_bigger):
         ax.plot(time, data, lw=1.0, linestyle ="-", color = color, alpha =1.0)
@@ -614,10 +627,11 @@ def Plot_fig(ax, time, data, param, plot_bigger,  **PARAMSDICT):
     #Add the legend
 #    ax.legend(loc="upper left")
     #Set label
-    ax.set_ylabel(ylabel, labelpad = pad, fontsize = 11)
-    plt.yticks(fontsize = 11)
+    ax.set_ylabel(ylabel, labelpad = pad, fontsize = fsize)
+    plt.yticks(fontsize = fsize)
     #Set ylim of x-axis
-    ax.set_xlim(min(time), max(time))
+    ax.set_xlim(tstart, tend)
+#    ax.set_xlim(min(time), max(time))
     #disable axis
     ax.set_xticklabels([])
 
@@ -709,9 +723,9 @@ def Plot_fig2D(ax, fig_object, time,r, data2D, beam_angle, height_adcp,  blank_d
         #invert the y-axis
         ax.invert_yaxis()
         #invert ticks values from positive to negative 
-        depths     = (height_adcp+ blank_dist) - np.cos(beam_angle) * ticks         
+        depths     = (height_adcp+ blank_dist) - np.cos(np.radian(beam_angle)) * ticks         
     else:
-        depths     = (height_adcp + blank_dist) + np.cos(beam_angle) * ticks         
+        depths     = (height_adcp + blank_dist) + np.cos(np.radian(beam_angle)) * ticks         
         #Remove the ticks marks (small vertical lines) on the x-axis
         ax.tick_params(axis="x", length = 0, color= "white", width = 0)
     #Set the inverted ticks label
@@ -793,7 +807,8 @@ def plot_spectrogram(ax, fig_object, tr, Date_of_Day, **PARAMSDICT):
     cbar_ax     = fig_object.add_axes([cbar_x , cbar_y, cbar_width, cbar_height])
     #set the colorbar annotation
     #fig_object.colorbar(img, cax = cbar_ax, label = 'Decibel (dB)', format="%+2.f", location='right',ticks=levels, spacing='proportional')
-    fig_object.colorbar(img, cax = cbar_ax, label = 'Decibel (dB)', format="%+2.f", location='right')
+    #fig_object.colorbar(img, cax = cbar_ax, label = 'Decibel (dB)', format="%+2.f", location='right')
+    fig_object.colorbar(img, cax = cbar_ax, label = 'Power (dB/Hz)', format="%+2.f")
     image_data = img.get_array()
     PSD_MEANS  = np.mean(image_data, axis = 1)
     #################################
@@ -990,6 +1005,8 @@ velocity       = Fig_params['velocity']
 vertical_vel   = Fig_params['vertical_vel']
 #Plot Pressure Parameters it True or False
 pressure       = Fig_params['pressure']
+#get the wind speed
+wind_speed     = Fig_params['wind_speed']
 ##Grab the Velocity component to visualize
 temperature    = Fig_params['temperature']
 ##Grab the Current direction paramter to plot
@@ -1003,8 +1020,10 @@ precipitation  = Fig_params['precipitation']
 discharge      = Fig_params['discharge']
 #Plot the Turbidity?
 turbidity      = Fig_params['turbidity']
+#Plot average backscatter
+avg_BS         = Fig_params['avg_BS']
 ##Plot the backscatter of Particules ###
-backscatter = Fig_params['backscatter']
+backscatter    = Fig_params['backscatter']
 #Tracking surface
 surface_tracking = Fig_params['surface_tracking']
 #plot the wind direction
@@ -1149,6 +1168,8 @@ if(envelope):
     time, tr, Title  = read_mseed(STARTDATE, mseedFile, Response_File, bandpass_spec)
     #get the parameter, the index of the corresponding axis, and the color
     _ , color, ix    = PARAMSDICT[param]
+    #set the title
+    axs[ix].set_title(Title, loc='center', pad=None)
     #Plot the figure by calling the plotting
     PlotEnvelop(axs[ix], STARTDATE, param, tr, linewidth=1.2,  **PARAMSDICT)
 #plot seismic waveform
@@ -1163,9 +1184,9 @@ if(waveform):
     #label        = '%s   %s             BP: %s s'%(basename_new[0], basename_new[1], bandpass)
     #label        = '%s       %s    '%(basename_new[0], basename_new[1])
     #label        = '%s '%(bandpass)
-    label        = Title
+    #label        = Title
     if(envelope==False):
-        axs[ix].set_title(label, loc='center', pad=None)
+        axs[ix].set_title(Title, loc='center', pad=None)
     #Plot the figure by calling the plotting function, plot_twinx
     data  =  tr.data * 1e+6
     #time = time.astype("datetime64[ns]")
@@ -1182,7 +1203,7 @@ if(pressure_waveform):
     label           = Title
     axs[ix].set_title(label, loc='center', pad=None)
     #Plot the figure by calling the plotting function, plot_twinx
-    Plot_fig(axs[ix], time, data, param, False, **PARAMSDICT)
+    Plot_fig(axs[ix], time, tr.data, param, False, **PARAMSDICT)
 
 if(seismic_power):
     #set the parameter
@@ -1206,6 +1227,16 @@ if(spectrogram):
     #Plot the figure by calling the plotting function of 2D Matrix
     plot_spectrogram(axs[ix], fig, tr, STARTDATE, **PARAMSDICT)
 
+if(wind_speed):
+    #get the Dischage data for the corresponding time
+    param         = "wind_speed"
+    #get the Dischage data for the corresponding time
+    time, data    = Extract_database(d_mteo,  date_list, param)
+    #get the parameter, the index of the corresponding axis, and the color
+    _ , color, ix = PARAMSDICT[param]
+    #Plot the figure by calling the plotting function, plot_twinx
+    #Plot_fig(axs[ix], time,  data, param, plot_bigger, **PARAMSDICT)
+    Plot_fig(axs[ix], time, data, param, plot_bigger, **PARAMSDICT)
 ##Plot the Discharge
 if(discharge):
     #set the parameter
@@ -1324,6 +1355,19 @@ if(veldir2D):
    ##############################
    #Plot the figure by calling the plotting function of 2D Matrix
    Plot_fig2D(axs[ix],fig, time, r , data2D, beam_angle, ADCP_DOWN_HEIGTH_FROM_LAKEBED, blank_dist,ADCP_DOWN=True, rframe= "top", **PARAMSDICT)
+
+#Plot the 1D backscatter
+if(avg_BS):
+    #set the parameter
+    param      = "avg_BS"
+    #get the Turbidity data for the corresponding time
+    #time, data = Extract_database(d_echo,  date_list, 'Echo')
+    time, data = Extract_df_list(df_avg,  date_list, param)
+    #print("****" *40)
+    #get the parameter, the index of the corresponding axis, and the color
+    _ , color, ix = PARAMSDICT[param]
+    #Plot the figure by calling the plotting function, plot_twinx
+    Plot_fig(axs[ix], time, data, param, plot_bigger, **PARAMSDICT)
 ##Plot the Turbidity
 if(turbidity):
     #set the parameter
@@ -1381,8 +1425,9 @@ if(STARTDATE != ENDDATE):
     #figname = "ADCP_WAVEFORM_PLOTS_from_%s_to_%s.png"%(STARTDATE, ENDDATE)
     figname = "ADCP_%s_from_%s_to_%s.png"%(basename, STARTDATE, ENDDATE)
 if(STARTDATE == ENDDATE):
-    axs[nfigs -1].set_xlabel('Time of the day: %s'%(STARTDATE), fontsize = 13)
+    axs[nfigs -1].set_xlabel('Time (hour:minute) on %s'%(STARTDATE), fontsize = 13)
     figname   = "ADCP_%s_of_%s.png"%(basename, STARTDATE)
+    #figname   = "ADCP_%s_of_%s.pdf"%(basename, STARTDATE)
 # Set the font size of yticks
 plt.yticks(fontsize=13)
 # Set the font size of xticks

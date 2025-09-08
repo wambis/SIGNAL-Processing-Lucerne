@@ -1,0 +1,237 @@
+#parameter for histogram plot
+#Path of Seimic data
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-27.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-28.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-29.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-30.mseed'}
+#####################
+
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-22.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-24.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-25.mseed'}
+################## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ###################
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-22.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-23.mseed',
+#                          'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-24.mseed',
+#                          'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-25.mseed'}
+#mseedFiles: {
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-04.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-05.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-06.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-07.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-08.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-09.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-10.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-11.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-12.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-13.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-14.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-15.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-16.mseed'
+#             }
+##             
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH2-2023-09-22.mseed'}
+#mseedFiles: {'DATASELECT/STATION09/XJ_MUS09_HH1-2024-04-27.mseed'}
+#mseedFiles: {'DATASELECT/STATION09/XJ_MUS09_HH3-2024-03-29.mseed'}
+#mseedFiles: {'DATASELECT/STATION08/XJ_MUS08_HH3-2024-03-29.mseed'}
+#mseedFiles: {'DATASELECT/STATION05/XJ_MUS05_HDH-2024-03-29.mseed'}
+#mseedFiles: {'DATASELECT/STATION05/XJ_MUS05_HH2-2024-03-29.mseed'}
+#
+#mseedFiles: {'DATASELECT/STATION05/XJ_MUS05_HH3-2024-03-29.mseed'}
+#mseedFiles: {'DATASELECT/STATION05/XJ_MUS05_HH1-2024-01-01.mseed'}
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH2-2023-08-27.mseed',
+#            'DATASELECT/STATION03/XJ_MUS03_HH2-2023-08-28.mseed'  
+#            }
+##
+
+
+
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH2-2023-11-14.mseed'
+#            }
+##
+#
+#mseedFiles: {'DATASELECT/STATION07/XJ_MUS07_HH2-2023-08-27.mseed'  
+#            }
+
+mseedFiles: {'DATASELECT/STATION04/XJ_MUS04_HH1-2023-08-27.mseed'  
+            }
+#mseedFiles: {'DATASELECT/STATION07/XJ_MUS07_HH1-2023-08-27.mseed'  
+#            }
+###
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-07.mseed'}
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-09-22.mseed'}
+#
+#mseedFiles: {
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-06.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-07.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-08.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-09.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-10.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-11.mseed'}
+##
+#mseedFiles: {
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-06.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-07.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-08.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-09.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-10.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-11.mseed'}
+#Response file
+Response_File: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+#
+#Plot_big: True
+FILE_DISCH: 'DATASELECT/Discharge-Lucerne-2023-2024.csv'
+#Discharge file name
+#Lake level File
+FILE_LAKE: 'DATASELECT/Lake-Level-Lucerne-2023-2024.csv'
+#METO FILE
+FILE_METEO: 'DATASELECT/DATA_ARRANGE_ALT23_24.csv'
+#FILE_METEO: 'DATASELECT/DATA_ARRANGE_GES.csv'
+###Temperature file
+FILE_TEMPEB: 'DATASELECT/DataTemperatureMooringB.json'
+FILE_TEMPEA: 'DATASELECT/DataTemperatureMooringA.json'
+ADCP_FILE_NAME_UP: 'DATASELECT/MUO2_UP_2023-08-16_to_2023-11-14.38100'
+ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_2023-08-16_to_2023-11-14.8315'
+###############################################################
+##Set the SEAFLOOR DEPTH at the location of the ADCP
+#For the deploiement from `2023-09-16` to `2023-11-21` #########
+SEAFLOOR_DEPTH: 144.0 # in meter
+###Set the ADCP DEPTH
+ADCP_UP_HEIGTH_FROM_LAKEBED: 23.9    #in meter
+ADCP_DOWN_HEIGTH_FROM_LAKEBED: 23.0  #in meter
+#### ##################################
+#Set the SEAFLOOR DEPTH at the location of the ADCP
+###For the deploiement from `2023-11-21` to `2024-03-06` #########
+#FILE_TEMPEA: 'DATASELECT/DataTmeperature_2023-11-21_to_2024-03-06.json'
+#FILE_TEMPEB: 'DATASELECT/DataTmeperature_2023-11-21_to_2024-03-06.json'
+#ADCP_FILE_NAME_UP:   'DATASELECT/MUO2_UP_2023-11-21_to_2024-03-06.23656'
+#ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_2023-11-21_to_2024-03-06.38100'
+#SEAFLOOR_DEPTH: 100.0 # in meter
+#####Set the ADCP DEPTH
+#ADCP_UP_HEIGTH_FROM_LAKEBED: 34.3    #in meter
+#ADCP_DOWN_HEIGTH_FROM_LAKEBED: 23.9  #in meter
+################################################
+###ADCP data
+#ADCP_FILE_NAME_UP:   'DATASELECT/MUO2_UP_2024-03-21_to_2024-06-07.38100'
+#ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_2024-03-21_to_2024-06-07.23656'
+###Temperature Data
+#FILE_TEMPEA: 'DATASELECT/DataTmeperature_2024-03-21_to_2024-06-07.json'
+#FILE_TEMPEB: 'DATASELECT/DataTmeperature_2024-03-21_to_2024-06-07.json'
+####For the deploiement from `2024-03-21` to `2024-06-07`#########
+#SEAFLOOR_DEPTH: 100.0 # in meter
+####Set the ADCP DEPTH
+#ADCP_UP_HEIGTH_FROM_LAKEBED: 34.3   #in meter
+#ADCP_DOWN_HEIGTH_FROM_LAKEBED:  33.9  #in meter
+#Provido the beam number on which you want to visualize the data correlation
+#Plot Options 
+Remove_frame: True
+#Plot in a window, set this true if you're plottion a window in a one day
+Windowing: True
+#window_start: "2023-08-27 09:00"
+#window_end:   "2023-08-27 16:20"
+###########################
+window_start: "2023-08-27 07:00"
+window_end:   "2023-08-27 18:30"
+#%%%%%%%%%%%%%%% Set up ADCP %%%%%%%%%%%%%%%%%%%%%
+dlnEcho_UP:  True
+dlnEcho_DOWN: True
+#ADCP parameter to plot
+dlnEcho_1D: False
+#Parameter to plot Horizontal velocity, this actually the Horizontal velocty
+velocity_up: False
+velocity_down: False
+#2D velocity
+velocity2D_UP: True
+velocity2D_DOWN: True
+#Parameter to plot Vertical  Velocity, this actually the Vertical velocty given the componant w
+vertical_vel: False
+#Do want to plot water Pressure?
+pressure_up: False
+pressure_down: False
+#Plot 2D current direction
+veldir2D_UP: True
+veldir2D_DOWN: True
+#lake Temparature
+#Do want to plot water Temperature?
+temperature_up: False
+temperature_down: False
+#2D Temperature
+Temperature2D_MA: False
+Temperature2D_MB: False
+#Water column temperature measure the thermistors
+Temperature_AVG: False
+#plot the wind
+wind_speed: False
+#Precipitation
+precipitation: False
+#Do want to plot Atmospheric Pressure?
+Atm_pressure_QFE: False   # which is the pressure measure at the station
+Atm_pressure_QFF: False  # Mean pressure at the sea level by taking into account the actual Temperature
+###Air Temperature ########
+TemperatureAir: False
+#Plot Atm_pressure and Temperature #########
+Atm_pressure_Temp: False
+#Discharge  
+discharge: False
+#plot the Lake Level
+Lake_Level: False
+#Plot Pressure fluctaution or seismic waves
+Pressure: False
+#plot the seismogram 
+waveform: True
+##################
+envelope: False
+#############
+#plot the pressure waveform
+pressure_waveform: False
+#plot the seismic energy
+seismic_power: False
+#wind and seismic power
+wind_seismic_power: False
+#Plot the Energy power
+seismicpower_dlnEcho: False
+#plot the spectrogram
+spectrogram: True
+#plot the probabilitic spectrogram density
+PPSD_spec: False
+#Plot Envelop
+#plot the seismic spectrogram?
+#set the depth index you want to plot, that from 0 -depth_idx
+#Mooring B
+#Set the space between the figures
+#fig_space: 0.25
+#fig_space: 0.12
+fig_space: 0.1
+#fig_space: 0.07 #Good for 2D plot vel2D, dlnEcho2D etc ...
+#fig_space: 0.14
+#set the figure size
+fig_width: 12
+fig_height: 16
+#fig_width: 18
+#fig_height: 14
+#fig_height: 15
+##%%%%%%%%%%%%%%%%
+#fig_width: 15
+#fig_height: 18
+#%%%%%%%%%%%%%%
+#Dictionary:
+PARAMSDICT: {'Atm_pressure_QFE': ['Patm (hPa)','seagreen'],  'Atm_pressure_QFF': ['Patm (hPa)','royalblue'] ,'TemperatureAir':['Air Temp (°C)', 'r'], 'Atm_pressure_Temp': ['Patm (hPa)','royalblue'], 'wind_seismic_power':['Wind speed (m/s)', 'teal'], 'wind_speed':['Wind speed (m/s)', 'teal'], 'precipitation': ['Precipitation (mm)','blue'], 'discharge': ['m³/s','deepskyblue'],  'Lake_Level':['m a.s.l', 'teal'], 'envelope':['Envelope (m/s²)','m'], 'waveform': ['µm/s²','k'], 'pressure_waveform': [ 'Pressure (Pa)','k'], 'seismic_power': ['Power (dB)','k'], 'spectrogram': ['Freq (Hz)','RdYlBu_r'], 'PPSD_spec': ['Period (s)','RdYlBu_r'],  'pressure_up':['Pressure (bar)','blue'], 'pressure_down':['Pressure (bar)','blue'],
+'dlnEcho_1D':['dln(Echo)', 'r'], 'seismicpower_dlnEcho': ['dB re 1 m²/s⁴/Hz','k'],'velocity_up': ['Vel (m/s)', 'k'],'velocity_down': ['Vel (m/s)', 'grey'], 'vertical_vel': ['Vel (m/s)', 'c'],  'velocity2D_UP': ['Vel (m/s)', 'RdYlBu_r'], 'velocity2D_DOWN': ['Vel (m/s)', 'RdYlBu_r'], 'dlnEcho_UP': ['dln(Echo)', 'RdYlBu_r'], 'dlnEcho_DOWN': ['dln(Echo)', 'RdYlBu_r'], 'veldir2D_UP': ['degrees_CW_from_N', 'CMRmap'], 'veldir2D_DOWN': ['degrees_CW_from_N', 'CMRmap'], 'temperature_up': ['Temp (°C)', 'r'], 'temperature_down': ['Temp (°C)', 'm'], 'Temperature2D_MA': ['Temp (°C)', 'Reds'],'Temperature2D_MB': ['Temp (°C)', 'Reds'],'Temperature_AVG':['Temp (°C)', 'm']}
+#Set the bandpass
+#bandpass: '35-40-85-100'
+#
+#Good Frequency STATION01
+#bandpass: '38-45-80-100'
+#bandpass: '0.02-0.022-200-1000'
+#bandpass: '8-10-110-120'
+#bandpass: '0.02-0.022-1000-1500'
+#Just removed instrument response
+bandpass: '0.02-0.022-200-1000'
+#bandpass: '6.25-8.3-40-50'
+#bandpass: '10-12-50-55'
+###############
+#bandpass: '6.25-8.3-40-50'
+#Just removed instrument response
+#bandpass_spec: '0.02-0.022-200-1000'
+bandpass_spec: '0.02-0.022-1000-1500'

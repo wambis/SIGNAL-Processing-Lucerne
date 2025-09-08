@@ -53,11 +53,16 @@ ADCP_DOWN: False
 PLOT2ADCP: True
 #Plot Options 
 #Mooring B
-#Set the SEAFLOOR DEPTH at the location of the ADCP
-SEAFLOOR_DEPTH: 120.0 # in meter
+##Set the SEAFLOOR DEPTH at the location of the ADCP
+#SEAFLOOR_DEPTH: 120.0 # in meter
+##Set the ADCP DEPTH
+#ADCP_UP_HEIGTH_FROM_LAKEBED: 20.9    #depth above the sediment in meter
+#ADCP_DOWN_HEIGTH_FROM_LAKEBED: 20.0  #depth above the sediment in meter
+
+SEAFLOOR_DEPTH: 144.0 # in meter
 #Set the ADCP DEPTH
-ADCP_UP_HEIGTH_FROM_LAKEBED: 20.9    #depth above the sediment in meter
-ADCP_DOWN_HEIGTH_FROM_LAKEBED: 20.0  #depth above the sediment in meter
+ADCP_UP_HEIGTH_FROM_LAKEBED: 23.9    #depth above the sediment in meter
+ADCP_DOWN_HEIGTH_FROM_LAKEBED: 23.0  #depth above the sediment in meter
 #
 Remove_frame: True
 #DO you want to visualize the data parameters? if yes set to True if no set to False
@@ -71,7 +76,8 @@ Remove_frame: True
 #STARTDATE: "2023-08-29"  
 #
 STARTDATE: "2023-10-23"  
-#STARTDATE: "2023-10-20"
+#STARTDATE: "2023-10-20"  
+#STARTDATE: "2023-11-06"  
 #STARTDATE: "2023-10-30"
 #STARTDATE: "2023-11-06"
 #STARTDATE: "2023-11-02"  
@@ -111,8 +117,8 @@ surface_tracking_down: False
 depth_adcp_up: False
 depth_adcp_down: False
 #Plot Particle motions in the water column
-pm_adcp_up: False
-pm_adcp_down: False
+pm_adcp_up: True
+pm_adcp_down: True
 #############################
 hist_adcp_up: False
 hist_adcp_down: False
@@ -141,8 +147,8 @@ backscatter_down: False
 velocity2D_up: False
 velocity2D_down: False
 #Do you want to plot the 1D Velocity Profile
-velocity_profile_up: True
-velocity_profile_down: True
+velocity_profile_up: False
+velocity_profile_down: False
 #num_range control the turbidity and the 2Dvelocity plot 
 #There is 25 ranges in generaly
 num_range: 25

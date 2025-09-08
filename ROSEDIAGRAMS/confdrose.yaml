@@ -1,0 +1,46 @@
+#parameter for histogram plot
+#Lake level File
+FILE_LAKE: 'DATASELECT/Lake-Level-Lucerne-2023-2024.csv'
+#################
+FILE_METEO: 'DATASELECT/DATA_ARRANGE_ALT23_24.csv'
+#FILE_METEO: 'DATASELECT/DATA_ARRANGE_GES23_24.csv'
+##################### 
+#ADCP_FILE_NAME_UP: 'DATASELECT/MUO2_UP_2023-08-16_to_2023-11-14.38100'
+#ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_2023-08-16_to_2023-11-14.8315'
+#
+ADCP_FILE_NAME_UP:   'DATASELECT/MUO2_UP_2024-03-21_to_2024-06-07.38100'
+ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_2024-03-21_to_2024-06-07.23656'
+#
+#
+#DictDate: {"2023-09-22"}
+DictDate: {"2024-03-29"}
+#set the start and the endtime for noise
+###heure:minutes:seconds
+#startime_noise: "01:48:00" #Good for 2024-03-29
+#endtime_noise:  "03:00:00" #Good or 2024-03-29
+####set the start and the endtime for signal
+#startime_signal: "11:12:00" #Good for 2024-03-29
+#endtime_signal:  "12:12:00" #Good for 2024-03-29
+#
+#Plot Options 
+#Remove_frame: True
+#plot the wind rose diagram
+wind_rose: True
+##############
+current_rose_up: True
+#########################
+current_rose_down: False
+#Plot Envelop
+#Provido the beam number on which you want to visualize the data correlation
+#Set the space between the figures
+#fig_space: 0.1
+fig_space: 0.19
+#fig_space: 0.25
+#set the figure size
+#fig_width: 12
+#fig_height: 11
+fig_width: 12
+fig_height: 13
+#Set the bandpass
+#Dictionary:
+PARAMSDICT: {'wind_rose': ['Wind Direction', 'CMRmap'],'current_rose_down': ['Current Direction', 'CMRmap'],  'current_rose_up': ['Current Direction', 'RdYlBu_r']}

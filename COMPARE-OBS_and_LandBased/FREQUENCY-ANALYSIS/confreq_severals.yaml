@@ -1,0 +1,202 @@
+#parameter for histogram plot
+#Path of the data
+ADCP_FILE_NAME_UP: 'DATASELECT/MUO2_UP_11_23.000'
+ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_11_23.000'
+#Discharge file name
+FILE_DISCH: 'DATASELECT/Discharge_June_Dec2023_NEW.txt'
+#METO FILE
+FILE_METEO: 'DATASELECT/DATA_ARRANGE_ALT.csv'
+#FILE_METEO: 'DATASELECT/DATA_ARRANGE_GES.csv'
+#Temperature file
+FILE_TEMPE: 'DATASELECT/DataTemperatureMooringA.json'
+#
+#
+#Seimic file
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-27.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-28.mseed'
+#######
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed'
+#mseedFileP: 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-23.mseed'
+####
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-08-28.mseed'
+#mseedFileP: 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-28.mseed'
+#
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-04-27.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH2-2024-04-27.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH1-2024-04-27.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HDH-2024-04-27.mseed']
+##
+#mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HH3-2023-09-22.mseed',
+#              'DATASELECT/STATION03/XJ_MUS03_HH2-2023-09-22.mseed',
+#              'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-22.mseed',
+#              'DATASELECT/STATION03/XJ_MUS03_HDH-2023-09-22.mseed']
+
+  #mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HH3-2023-11-14.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HH2-2023-11-14.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HH1-2023-11-14.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HDH-2023-11-14.mseed']
+  #mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HH3-2023-10-07.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-07.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-07.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-07.mseed']
+  #
+#mseedFiles: ['DATASELECT/STATION09/XJ_MUS09_HH3-2024-03-29.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HH2-2024-03-29.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HH1-2024-03-29.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HDH-2024-03-29.mseed']
+#
+#mseedFiles: ['DATASELECT/STATION09/XJ_MUS09_HH3-2024-01-04.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HH2-2024-01-04.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HH1-2024-01-04.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HDH-2024-01-04.mseed']
+#
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-03-26.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH2-2024-03-26.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH1-2024-03-26.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HDH-2024-03-26.mseed']
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-02-25.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH2-2024-02-25.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH1-2024-02-25.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HDH-2024-02-25.mseed']
+
+  #mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-04-08.mseed',
+  #              'DATASELECT/STATION05/XJ_MUS05_HH2-2024-04-08.mseed',
+  #              'DATASELECT/STATION05/XJ_MUS05_HH1-2024-04-08.mseed',
+  #              'DATASELECT/STATION05/XJ_MUS05_HDH-2024-04-08.mseed']
+  #
+mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed',
+                  'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-23.mseed',
+                  'DATASELECT/STATION03/XJ_MUS03_HH3-2023-10-23.mseed']
+  
+#mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-07.mseed',
+#                  'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-07.mseed']
+#  
+#mseedFiles:       ['DATASELECT/STATION03/XJ_MUS03_HH1-2023-11-24.mseed',
+#                  'DATASELECT/STATION03/XJ_MUS03_HH2-2023-11-24.mseed',
+#                  'DATASELECT/STATION03/XJ_MUS03_HH3-2023-11-24.mseed',
+#                  'DATASELECT/STATION03/XJ_MUS03_HDH-2023-11-24.mseed']
+##############  
+mseedFile_Land: 'LANDMUO_DATA/MUO_2023-10-23_BH.mseed'
+#Response file
+#XJ_MUS03_HDH-2023-11-24.mseed
+Response_File_OBS: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+#
+#Land based station Response file
+Response_File_Land: 'LANDMUO_DATA/MUO_2023-10-23.xml'
+#
+############################
+plot_loglog: True
+#Plot Options 
+#Mooring B
+#Set the SEAFLOOR DEPTH at the location of the ADCP
+SEAFLOOR_DEPTH: 144.0 # in meter
+#Set the ADCP DEPTH
+ADCP_UP_HEIGTH_FROM_LAKEBED: 23.9    #depth above the sediment in meter
+ADCP_DOWN_HEIGTH_FROM_LAKEBED: 23.0  #depth above the sediment in meter
+#
+Remove_frame: True
+#Visualize wavelet transform
+wavelet_transform: False
+#DO you want to visualize the data parameters? if yes set to True if no set to False
+##Set the time in the following format YYYY-MM-DD 
+#STARTDATE: "2023-11-02"  
+#ENDDATE: "2023-11-02"
+###
+#
+STARTDATE: "2023-10-23"  
+#STARTDATE: "2023-08-27"  
+#STARTDATE: "2023-08-28"  
+#STARTDATE: "2023-08-29"  
+#
+#STARTDATE: "2023-10-23"  
+#STARTDATE: "2023-10-20"
+#STARTDATE: "2023-10-30"
+#STARTDATE: "2023-11-06"
+#STARTDATE: "2023-11-02"  
+#####Set the ending time
+#ENDDATE: "2023-11-02"
+#Make your plot bigger
+plot_bigger: False
+#Parameter to plot Horizontal velocity, this actually the Horizontal velocty
+velocity_up: False
+velocity_down: False
+#################### #
+veldir1D_up: False
+veldir1D_down: False
+#Parameter to plot Vertical  Velocity, this actually the Vertical velocty given the componant w
+vertical_vel_up: False
+vertical_vel_down: False
+#Do want to plot water Pressure?
+pressure_up: False
+pressure_down: False
+###########
+surface_tracking_up: False
+surface_tracking_down: False
+#Plot the depth change of ADCP
+depth_adcp_up: False
+depth_adcp_down: False
+#Plot Particle motions in the water column
+#############################
+#Do want to plot Atmospheric Pressure?
+Atm_pressure_QFE: False     # which is the pressure measure at the station
+Atm_pressure_QFF: False   # Mean pressure at the sea level by taking into account the actual Temperature
+#Do want to plot water Temperature?
+temperature_up: False
+temperature_down: False
+temperature: False
+#Do want to plot the Dischage into the basin ?
+discharge: False
+#Do want to plot the 1D average Backscatter <====> Turbidity into the basin ?
+avg_BS_up: False
+avg_BS_down: False
+#num_range control the turbidity and the 2Dvelocity plot 
+#There is 25 ranges in generaly
+num_range: 25
+#num_range: 20
+#Do want to plot the Turbidity Kenetic Energy ?
+tke: False
+#Wind speed
+wind_speed: False
+#Plot wind direction?
+wind_direction : False
+#Precipitation
+precipitation: False
+#plot the seismogram 
+waveform: True
+pressure_waveform: True
+#Envelop 
+#Do want to plot water density ?
+#density: False
+#DO you want to visualize the data correlation with depth (the quality of the data with depth)? if yes set to True if no set to False
+#Ensemble Interval (s) = "600.00"
+#To average the data into time bins, we need the parmeter below
+#1) n_bin which represents the number of data points in each ensemble, 
+#2) here our enseblme happen every 600s and  the frequency is fs = 0.001668, so n_bin = fs* 600 = 1
+n_bin: 1
+#Provido the beam number on which you want to visualize the data correlation
+#Set the space between the figures
+fig_space: 0.1
+#fig_space: 0.15
+#fig_space: 0.25
+#set the figure size
+fig_width: 26
+fig_height: 12
+#
+#fig_width: 10
+#fig_height: 12
+#Set the bandpass
+#bandpass: '35-40-85-100'
+#
+#Good Frequency STATION03
+#bandpass: '40-45-80-100'
+#bandpass: '0.02-0.022-200-1000'
+bandpass: '0.0002-0.00022-200-10000'
+#Just removed instrument response
+#bandpass_spec: '0.02-0.022-200-1000'
+bandpass_spec: '0.0002-0.00022-200-10000'
+#
+########################
+#bandpass: '60-70-100-120'
+######################
+#Dictionary for parameter to plot
+PARAMSDICT: {'waveform': ['Acceleration PSD (m²/s⁴/Hz)','k'], 'pressure_waveform': ['Pressure PSD (Pa²/Hz)','k'], 'avg_BS_up': ['1D-Backscatter', 'green'], 'avg_BS_down': ['1D-Backscatter', 'blue'], 'wind_speed':['W_speed (km/h)', 'teal'], 'wind_direction':['Wind-Dir (°C)', 'k'],'velocity_up': ['Velocity (m/s)', 'k'], 'velocity_down': ['Velocity (m/s)', 'blue'],'veldir1D_up': ['degrees_CW_from_N', 'y'], 'veldir1D_down': ['degrees_CW_from_N', 'y'],'vertical_vel_up': ['Velocity (m/s)', 'c'], 'vertical_vel_down': ['Velocity (m/s)', 'c'], 'temperature_up': ['Temperature (°C)', 'r'], 'temperature_down': ['Temperature (°C)', 'r'], 'temperature': ['Temperature (°C)', 'r'],'pressure_up':['Pressure (bar)','tab:blue'], 'pressure_down':['Pressure (bar)','blue'], 'depth_adcp_up': [ 'Depth Variation (m)', 'teal'],  'depth_adcp_down': [ 'Depth Variation (m)', 'b'], 'surface_tracking_up': ['Surface Track (m)', 'b'], 'surface_tracking_down': ['Bottom Track (m)', 'b'],   'tke': ['TKE (J/Kg)', 'pink'], 'discharge': ['Discharge (m³/s)','blueviolet'], 'Atm_pressure_QFE': ['Atm_Pressure (bar)','seagreen'],  'Atm_pressure_QFF': ['Atm_Pressure (bar)','royalblue'], 'precipitation': ['Precipitation (mm)','blue']}

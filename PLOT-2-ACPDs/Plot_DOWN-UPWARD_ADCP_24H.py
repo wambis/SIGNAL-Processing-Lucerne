@@ -23,12 +23,13 @@ from matplotlib.transforms import Affine2D
 #######################
 import xlrd
 #################################################
-from matplotlib.ticker import FormatStrFormatter
+from matplotlib.ticker import FormatStrFormatter, MultipleLocator, FuncFormatter
 ##############################################
 import matplotlib.dates as mdates
 #######################################
 from matplotlib.colors import Normalize
 import matplotlib.cm as cm
+import matplotlib.colors as mcolors
 ############################
 import datetime as dtt 
 import xarray as xr
@@ -786,27 +787,46 @@ def Plot_fig1D(ax, ranges, data, param, plot_bigger,  **PARAMSDICT):
 
 
 ####################################################################################
-def Plot_PM(ax, time, data1D, data2D_H, data2D_V, beam_angle,blank_dist, depth_adcp,  param, rframe, ADCP_DOWN =True,  **PARAMSDICT):
-#def Plot_PM(ax, time, data1D, data2D_H, data2D_V, beam_angle,blank_dist, depth_adcp,  param,  ADCP_DOWN =True,  **PARAMSDICT):
+def Plot_PM(ax, time, data2D_H, data2D_V, df, depth_adcp,  param, rframe, ADCP_DOWN =True,  **PARAMSDICT):
     #speed up figure plot
     plt.style.use('fast')
+    beam_angle = df.beam_angle
+    blank_dist = df.blank_dist
+    ranges     = df.range.data
     ##Get the parameters
     ylabel, color, ix, txt = PARAMSDICT[param]
     pad = None
+    #set maximum and the minimum value for colorbar
+    vmin =0.0; vmax = 0.4
+    #Compute the data1D that will be plotted
+    data1D   = np.nanmean(data2D_H, axis =0)
+    Vh_mean  = np.max(data1D) * 1
+    Vv_mean  = np.max( np.nanmean(data2D_V, axis =0) ) * 1
+    if(ADCP_DOWN):
+       H_sea  = abs((depth_adcp+ blank_dist) - np.cos(np.radians(beam_angle)) * ranges) 
+       #print('ADCP_DOWN   VH_mean: %.2f    Vv_mean: %.2f'%(Vh_mean, Vv_mean))
+       #exit()
+    else:
+        H_sea = depth_adcp + blank_dist + ranges * np.cos(np.radians(beam_angle))
+        #print('ADCP_UP   VH_mean: %.2f    Vv_mean: %.2f'%(Vh_mean, Vv_mean))
+    #print(H_sea)
+    ###############
     #Define another axis in such away that ax and ax2 share the same x-axis with different scales
     ax2 = ax.twiny()
-
-    Mg  = np.sqrt( data2D_H **2 + data2D_V **2)
+    # Creating a grid for quiver plot 
+    X, Y = np.meshgrid(np.arange(data2D_H.shape[1]), H_sea)
+    #Compute the magnnitude fo the velocity
+    Mg  = np.sqrt(data2D_H **2 + data2D_V **2)
     #Plot the paricles motion with the direction
+    norm = mcolors.Normalize(vmin = vmin, vmax= vmax)
     #ax2.quiver(data2D_H,  data2D_V, angles = 'xy', scale_units='width', scale =6, 
     param_new = "%s %s"%(param.split("_")[1], param.split("_")[2])
-    quiver = ax2.quiver(data2D_H,  data2D_V, Mg, angles = 'xy', scale_units='width', scale =6, 
-               #zorder= 2,  headwidth=3., headlength =4., cmap ='jet', color = color,   alpha =0.9, label = param)
-               zorder= 2,  headwidth=3., headlength =4., cmap ='jet', color = color,   alpha =0.9, label = param_new.upper())
+    quiver = ax2.quiver(X, Y, data2D_H,  data2D_V, Mg, angles = 'xy', scale_units='width', scale =7, 
+    #quiver = ax2.quiver(data2D_H,  data2D_V, Mg, angles = 'xy', scale_units='width', scale =6, 
+               zorder= 5,headwidth=3.,headlength =4.,cmap ='jet',color = color,alpha =0.9,norm=norm,label = param_new.upper())
                #pivot= 'tail',   color = color, alpha =0.9, label = param)
     #set the colorbar
     cbar = plt.colorbar(quiver)
-    #plt.colorbar(quiver, label = "Velocity (m/s)")
     #Plot the data1D this is a fake plot, just to make the time appear on the x-axis as we need
     #Use white color the curve will not appear on the particles motion plot
     ax.plot(time, data1D, color='white', lw=0.02)
@@ -828,7 +848,6 @@ def Plot_PM(ax, time, data1D, data2D_H, data2D_V, beam_angle,blank_dist, depth_a
     ax2.legend(loc="upper left")
     #Set label
 #    ax.set_ylabel(ylabel, labelpad = pad, fontsize = 11)
-#    plt.yticks(fontsize = 11)
     #number of vertical lines for grid
     locations = verical_grid()
     ax.xaxis.set_major_locator(locations)
@@ -836,32 +855,34 @@ def Plot_PM(ax, time, data1D, data2D_H, data2D_V, beam_angle,blank_dist, depth_a
     ticks         = ax.get_yticks()
     #if(ADCP_OPTION):
     if(ADCP_DOWN):
-        #invert the y-axis
-        #depths    = depth_adcp - np.cos(beam_angle) * ticks         
-        depths     = (depth_adcp+ blank_dist) - np.cos(beam_angle) * ticks         
-        ax.invert_yaxis()
+        #set the ylim by taking into account the ADCP downward looking position
+        ax.set_ylim([min(H_sea), depth_adcp])
         #invert ticks values from positive to negative 
         ax.set_ylabel(ylabel, labelpad = pad, loc="top", fontsize = 12)
         #move the label by -0.08 on x-axis and by 1.2 on y-axis
         ax.yaxis.set_label_coords(-0.08 , 1.3)
         plt.yticks(fontsize = 12)
+        #set the colorbar
+        #cbar = plt.colorbar(quiver)
         #set the colorbar position
         cbar.set_label("Velocity (m/s)",fontsize = 12)
         cbar.ax.yaxis.set_label_position("right")
         #shift the label by 3.5 along x-axis and by 1.0 along the y-axis
         cbar.ax.yaxis.set_label_coords(3.5, 1.0)
     else:
-        #depths     = depth_adcp + np.cos(beam_angle) * ticks         
-        depths     = (depth_adcp + blank_dist) + np.cos(beam_angle) * ticks         
         ax2.set_xticks([])
         #Remove the ticks marks (small vertical lines) on the x-axis
         ax.tick_params(axis="x", length = 0, color= "white", width = 0)
+        #important setting for yticks 
+        ax.set_yticks(np.arange(depth_adcp, max(H_sea), 5))
+        #set the ylim by taking into account the ADCP downward looking position
+        ax.set_ylim([depth_adcp, max(H_sea)])
+        #shift the label by 3.5 along x-axis and by 1.0 along the y-axis
+        cbar.ax.yaxis.set_label_coords(3.5, 1.0)
     #Set the inverted ticks label
-    #depths_ticks   = [int(it) for it in depths]
-    depths_ticks   = ["%.1f"%(it) for it in depths]
-    ax.set_yticklabels(depths_ticks)
+    #print(depths_ticks)
     #Make the grid of the axis
-    ax.grid(visible = True, axis = "both", alpha = 0.7)
+    ax.grid(visible = True, axis = "both", alpha = 0.4)
 #    ax.set_xlim(time.min(), time.max())
 
     #Remove the frame on the plot
@@ -882,6 +903,8 @@ def Plot_PM(ax, time, data1D, data2D_H, data2D_V, beam_angle,blank_dist, depth_a
     #Get the start and the endtime
     tstart, tend    =  start_endtime(time) 
     ax.set_xlim(tstart, tend)
+    #Formatted the yticks
+    ax.yaxis.set_major_locator(MultipleLocator(5))
     #disable axis
     ax.set_xticklabels([])
 
@@ -1754,8 +1777,8 @@ if(pm_adcp_up):
     #Call the function to plot particule motion
     #remove a bottom frame
    rframe = "bottom"
-   Plot_PM(axs[ix], time, u1d, u2d, w2d, beam_angle_up, blank_dist_up,  ADCP_UP_HEIGTH_FROM_LAKEBED,  param, rframe, ADCP_DOWN =False,  **PARAMSDICT)
-   #Plot_PM(axs[ix], time, u1d, u2d, w2d, beam_angle_up, blank_dist_up,  ADCP_UP_HEIGTH_FROM_LAKEBED,  param, ADCP_DOWN =False,  **PARAMSDICT)
+   Plot_PM(axs[ix], time, u2d, w2d, df_up,  ADCP_UP_HEIGTH_FROM_LAKEBED,  param, rframe, ADCP_DOWN =False,  **PARAMSDICT)
+   #Plot_PM(axs[ix], time, u2d, w2d, beam_angle_up, blank_dist_up,  ADCP_UP_HEIGTH_FROM_LAKEBED,  param, rframe, ADCP_DOWN =False,  **PARAMSDICT)
 
 if(pm_adcp_down):
    param      = "pm_adcp_down"
@@ -1766,11 +1789,11 @@ if(pm_adcp_down):
    #get the parameter, the index of the corresponding axis, and the color
    _ , color, ix, _ = PARAMSDICT[param]
    # change the sign of the vertical velocity
-   w2d = -1 * w2d
+#   w2d = -1 * w2d
    #Call the function to plot particule motion
    #remove frame
    rframe = "top"
-   Plot_PM(axs[ix], time, u1d, u2d, w2d, beam_angle_down, blank_dist_down, ADCP_DOWN_HEIGTH_FROM_LAKEBED,  param, rframe, ADCP_DOWN =True,  **PARAMSDICT)
+   Plot_PM(axs[ix], time, u2d, w2d, df_down, ADCP_DOWN_HEIGTH_FROM_LAKEBED,  param, rframe, ADCP_DOWN =True,  **PARAMSDICT)
    #Plot_PM(axs[ix], time, u1d, u2d, w2d, beam_angle_down, blank_dist_down, ADCP_DOWN_HEIGTH_FROM_LAKEBED,  param, ADCP_DOWN =True,  **PARAMSDICT)
 ######################################################################
 if(Current_Profile_up):

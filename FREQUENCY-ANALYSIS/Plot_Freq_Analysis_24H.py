@@ -16,16 +16,19 @@ import numpy as np
 import pandas as pd
 from tabulate import tabulate
 #for interpolation
-from scipy.interpolate import InterpolatedUnivariateSpline
 #######################################
 from matplotlib.ticker import ScalarFormatter
 from matplotlib.transforms import Affine2D
 #######################
 import xlrd
 from scipy.signal import detrend
+import scipy.signal as signalscp
+from scipy.signal import savgol_filter
 #################################################
 from matplotlib.ticker import FormatStrFormatter, NullFormatter
 #from matplotlib.ticker import NullFormatter
+#from scipy.signal import savgol_filter as sgolay
+from scipy.signal import savgol_filter
 ##############################################
 import matplotlib.dates as mdates
 #######################################
@@ -46,6 +49,10 @@ from mhkit.dolfyn.adp import api
 from pandas.core.common import flatten
 ##################################
 from obspy.core import UTCDateTime
+import pywt
+from scipy.signal import convolve2d, find_peaks
+from scipy.interpolate import interp1d
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 AphaDict = {0:'(a)', 1: '(b)', 2: '(c)', 3: '(d)', 4: '(e)',
             5: '(f)', 6: '(g)', 7:'(h)', 8:'(i)', 9: '(j)',10:'(k)',
@@ -187,13 +194,14 @@ def read_mseed(Date_of_Day, mseedFile, xmlFile, bandpass,resampling=True, Pressu
             data          = tr.data
             time          = tr.times()
         #return(time, tr, Title)
-    return(time, data, Title)
+    return(time, tr, Title)
 
 
 
 
 ###################################3
 def Extract_database_UTC(df,  TimeList, param):
+    TimeList =['2023-10-21', '2023-10-22', '2023-10-23', '2023-10-24', '2023-10-25', '2023-10-26', '2023-10-27']
     #Grab the time of the data frame
     time_df         = df['DateTime']
     #Transform the pandas.core.series.Series time into a list of time
@@ -223,14 +231,15 @@ def Extract_database_UTC(df,  TimeList, param):
 
 
 #############################################
-def Extract_database(df,  Tlist, param):
+def Extract_database(df,  TimeList, param):
     #df is a dataframe and Date should be in the following format: YYYY-MM-DD
+    TimeList =['2023-10-21', '2023-10-22', '2023-10-23', '2023-10-24', '2023-10-25', '2023-10-26', '2023-10-27']
     #Perform the Extraction for the correspondig Year and drop all NaN
-    dYR  = [df.where(df["YR"]==float(ti.split('-')[0][-2:])).dropna(how='all') for ti in Tlist]
+    dYR  = [df.where(df["YR"]==float(ti.split('-')[0][-2:])).dropna(how='all') for ti in TimeList]
     #Perform the Extraction for the correspondig Month and drop all NaN
-    dMTs = [dm.where(dm["MO"]==float(ti.split('-')[1])).dropna(how='all') for dm, ti  in zip(dYR,Tlist)]
+    dMTs = [dm.where(dm["MO"]==float(ti.split('-')[1])).dropna(how='all') for dm, ti  in zip(dYR,TimeList)]
     #Perform the Extraction for the correspondig Day and drop all NaN
-    dDay = [dd.where(dd["DA"]==float(ti.split('-')[2])).dropna(how='all') for dd, ti  in zip(dMTs, Tlist)]
+    dDay = [dd.where(dd["DA"]==float(ti.split('-')[2])).dropna(how='all') for dd, ti  in zip(dMTs, TimeList)]
     #Now let's collect the final Data for the corresponding date for a giving paramter
     Data_ALL = np.concatenate([ds[param].to_numpy() for ds in dDay])
     #Now let's collect the final time by concatenating the times that has been collected
@@ -244,12 +253,12 @@ def Extract_database(df,  Tlist, param):
     #return (id_time, sel_data)
 
 
-def Extract_RBR_SOLO_TEMP(DataDict,  Tlist, AVERAGE=False):
+def Extract_RBR_SOLO_TEMP(DataDict,  TimeList, AVERAGE=False):
     #The data should be in the dictionary, where the keys are the depths
     DATA2D     = []
     DEPTHS     = []
     #get the time you need to plot
-    TIMES      = set([time for depth in DataDict.keys() for time in DataDict[depth] if(time.split()[0] in Tlist)])
+    TIMES      = set([time for depth in DataDict.keys() for time in DataDict[depth] if(time.split()[0] in TimeList)])
     #####################################
     TIMES      = sorted(np.asarray(list(TIMES)))
     #loop over the depths and the time to form a matrix
@@ -273,8 +282,8 @@ def Extract_RBR_SOLO_TEMP(DataDict,  Tlist, AVERAGE=False):
         return(TIMES,DEPTHS, DATA2D)
 
 
-def Extract_df_list(df,  Tlist, param, nrange=None):
-#def Extract_df_list(df,  Tlist, param):
+def Extract_df_list(df,  TimeList, param, nrange=None):
+    TimeList =['2023-10-21', '2023-10-22', '2023-10-23', '2023-10-24', '2023-10-25', '2023-10-26', '2023-10-27']
     #df is a dataframe and Date should be in the following format: YYYY-MM-DD
     #Create an empty list to append the extracted data Check if the parameter==velocity
     if(nrange== None):
@@ -287,53 +296,53 @@ def Extract_df_list(df,  Tlist, param, nrange=None):
         #exit()
         #Loop over the list of the time
         try:
-            P  = np.concatenate([np.nanmean(df.velds.U_mag.sel(time = ti), axis =0) for ti in Tlist])
-            T  = np.concatenate([df.velds.U_mag.sel(time = ti)['time'] for ti in Tlist])
+            P  = np.concatenate([np.nanmean(df.velds.U_mag.sel(time = ti), axis =0) for ti in TimeList])
+            T  = np.concatenate([df.velds.U_mag.sel(time = ti)['time'] for ti in TimeList])
         except:
             print("The Data seems not to exist for the certain data in the list Time :  ")
-            print(' , '.join(Tlist))
+            print(' , '.join(TimeList))
         #print(P)
 
     elif(param=="velocity_profile_up" or param=="velocity_profile_down"):
         #Loop over the list of the time
         U        = df.velds.U_mag
-        Matrix2D = np.concatenate([U.sel(time = ti, range = r) for ti in Tlist], axis =1)
+        Matrix2D = np.concatenate([U.sel(time = ti, range = r) for ti in TimeList], axis =1)
         try:
-            #P  = np.concatenate([np.nanmean(df.velds.U_mag.sel(time = ti), axis =1) for ti in Tlist])
+            #P  = np.concatenate([np.nanmean(df.velds.U_mag.sel(time = ti), axis =1) for ti in TimeList])
             ##Get the range, altitude
             P  = np.nanmean(Matrix2D ,axis =1) 
             #Get the range, altitude
             T  =  r
         except:
             print("The Data seems not to exist for the certain data in the list Time :  ")
-            print(' , '.join(Tlist))
+            print(' , '.join(TimeList))
     #Check if the desired velocity is the vertical velocity
     elif(param=="vertical_vel_up"):
         #Loop over the list of the time
-        P  = np.concatenate([np.nanmean(df.velds.w.sel(time = ti), axis =0) for ti in Tlist])
-        T  = np.concatenate([df.velds.w.sel(time = ti)['time'] for ti in Tlist])
+        P  = np.concatenate([np.nanmean(df.velds.w.sel(time = ti), axis =0) for ti in TimeList])
+        T  = np.concatenate([df.velds.w.sel(time = ti)['time'] for ti in TimeList])
 
     elif(param== "vertical_vel_down"):
 
-        P  = np.concatenate([np.nanmean(df.velds.w.sel(time = ti), axis =0) for ti in Tlist])
-        T  = np.concatenate([df.velds.w.sel(time = ti)['time'] for ti in Tlist])
+        P  = np.concatenate([np.nanmean(df.velds.w.sel(time = ti), axis =0) for ti in TimeList])
+        T  = np.concatenate([df.velds.w.sel(time = ti)['time'] for ti in TimeList])
 
     elif(param=="veldir1D"):
             #Loop over the list of the time
-            P  = np.concatenate([np.nanmean(df.velds.U_dir.sel(time = ti), axis =0) for ti in Tlist])
-            T  = np.concatenate([df.velds.U_dir.sel(time = ti)['time'] for ti in Tlist])
+            P  = np.concatenate([np.nanmean(df.velds.U_dir.sel(time = ti), axis =0) for ti in TimeList])
+            T  = np.concatenate([df.velds.U_dir.sel(time = ti)['time'] for ti in TimeList])
         
     elif(param=="avg_BS"):
         #make the average on all the 4 beams, NB the key word here is amp
         df_beam_avg = np.mean(df.amp, axis = 0) 
         #Loop over the list of the time
-        P  = np.concatenate([np.nanmean(df_beam_avg.sel(time = ti), axis =0) for ti in Tlist])
-        T  = np.concatenate([df_beam_avg.sel(time = ti)['time'] for ti in Tlist])
+        P  = np.concatenate([np.nanmean(df_beam_avg.sel(time = ti), axis =0) for ti in TimeList])
+        T  = np.concatenate([df_beam_avg.sel(time = ti)['time'] for ti in TimeList])
 
     else:
         #Loop over the  list of the time an extract the desire parameter
-        P  = np.concatenate([df[param].sel(time = ti) for ti in Tlist])
-        T  = np.concatenate([df[param].sel(time = ti)['time'] for ti in Tlist])
+        P  = np.concatenate([df[param].sel(time = ti) for ti in TimeList])
+        T  = np.concatenate([df[param].sel(time = ti)['time'] for ti in TimeList])
     #############################################
     #T           =  T[: num_range]
     #P           =  P[: len(T)]
@@ -341,8 +350,8 @@ def Extract_df_list(df,  Tlist, param, nrange=None):
     return (T, P)
 
 #Extract 2D matrix from ADCP
-#def Extract_matrix(df, Tlist,  param, nrange=25):
-def Extract_matrix(df, Tlist,  param, nrange=None):
+#def Extract_matrix(df, TimeList,  param, nrange=25):
+def Extract_matrix(df, TimeList,  param, nrange=None):
         if(nrange== None):
             r        = df.range.data
         else:
@@ -350,8 +359,8 @@ def Extract_matrix(df, Tlist,  param, nrange=None):
         if(param=="velocity2D"):
             U        = df.velds.U_mag
             #r        = U.range.data[:nrange]
-            Matrix2D = np.concatenate([U.sel(time = ti, range = r) for ti in Tlist], axis =1)
-            time     = np.concatenate([U.sel(time = ti)['time'] for ti in Tlist])
+            Matrix2D = np.concatenate([U.sel(time = ti, range = r) for ti in TimeList], axis =1)
+            time     = np.concatenate([U.sel(time = ti)['time'] for ti in TimeList])
             #Free memory
             del U
             return (time, r, Matrix2D)
@@ -359,8 +368,8 @@ def Extract_matrix(df, Tlist,  param, nrange=None):
             #Get the velocity Direction in 2D
             U        = df.velds.U_dir
             #r        = U.range.data[:nrange]
-            Matrix2D = np.concatenate([U.sel(time = ti, range = r) for ti in Tlist], axis =1)
-            time     = np.concatenate([U.sel(time = ti)['time'] for ti in Tlist])
+            Matrix2D = np.concatenate([U.sel(time = ti, range = r) for ti in TimeList], axis =1)
+            time     = np.concatenate([U.sel(time = ti)['time'] for ti in TimeList])
             #Free memory
             del U
             return (time, r, Matrix2D)
@@ -369,8 +378,8 @@ def Extract_matrix(df, Tlist,  param, nrange=None):
             #r        = v2d.range.data[:nrange]
             #v =====> to the NORTH
             v2d      = df.velds.v
-            v2d_sel  = np.concatenate([v2d.sel(time = ti, range = r) for ti in Tlist], axis =1)
-            time     = np.concatenate([v2d.sel(time = ti)['time'] for ti in Tlist])
+            v2d_sel  = np.concatenate([v2d.sel(time = ti, range = r) for ti in TimeList], axis =1)
+            time     = np.concatenate([v2d.sel(time = ti)['time'] for ti in TimeList])
             #get 1D Northern velocity
             v1d      = np.nanmean(v2d_sel.data, axis= 0)
             #Free memory
@@ -383,8 +392,8 @@ def Extract_matrix(df, Tlist,  param, nrange=None):
             #u =====> to the EAST
             #r        = u2d.range.data[:nrange]
             u2d      = df.velds.u
-            u2d_sel  = np.concatenate([u2d.sel(time = ti, range = r) for ti in Tlist], axis =1)
-            time     = np.concatenate([u2d.sel(time = ti)['time'] for ti in Tlist])
+            u2d_sel  = np.concatenate([u2d.sel(time = ti, range = r) for ti in TimeList], axis =1)
+            time     = np.concatenate([u2d.sel(time = ti)['time'] for ti in TimeList])
             #get 1D Eastern velocity
             u1d      = np.nanmean(u2d_sel.data, axis= 0)
             #Free memory
@@ -397,8 +406,8 @@ def Extract_matrix(df, Tlist,  param, nrange=None):
             #w =====> is the vertical component of the velocity
             #r        = w2d.range.data[:nrange]
             w2d      = df.velds.w
-            w2d_sel  = np.concatenate([w2d.sel(time = ti, range = r) for ti in Tlist], axis =1)
-            time     = np.concatenate([w2d.sel(time = ti)['time'] for ti in Tlist])
+            w2d_sel  = np.concatenate([w2d.sel(time = ti, range = r) for ti in TimeList], axis =1)
+            time     = np.concatenate([w2d.sel(time = ti)['time'] for ti in TimeList])
             #get 1D Eastern velocity
             w1d      = np.nanmean(w2d_sel.data, axis= 0)
             #Free memory
@@ -410,8 +419,8 @@ def Extract_matrix(df, Tlist,  param, nrange=None):
             #r        = U2d.range.data[:nrange]
             #w =====> is the vertical component of the velocity
             U2d      = df.velds.U_mag
-            U2d_sel  = np.concatenate([U2d.sel(time = ti, range = r) for ti in Tlist], axis =1)
-            time     = np.concatenate([U2d.sel(time = ti)['time'] for ti in Tlist])
+            U2d_sel  = np.concatenate([U2d.sel(time = ti, range = r) for ti in TimeList], axis =1)
+            time     = np.concatenate([U2d.sel(time = ti)['time'] for ti in TimeList])
             #get 1D Eastern velocity
             U1d      = np.nanmean(U2d_sel.data, axis= 0)
             #Free memory
@@ -423,20 +432,20 @@ def Extract_matrix(df, Tlist,  param, nrange=None):
             #u =====> to the EAST
             #r        = u_2d.range.data[:nrange]
             u_2d     = df.velds.u
-            u2d_sel  = np.concatenate([u_2d.sel(time = ti, range = r) for ti in Tlist], axis =1)
+            u2d_sel  = np.concatenate([u_2d.sel(time = ti, range = r) for ti in TimeList], axis =1)
             ########################
             #Get the 2D Northen velocity  
             #v =====> to the NORTH
             v_2d     = df.velds.v
             #r        = v_2d.range.data[:nrange]
             #r        = w_2d.range.data[:nrange]
-            v2d_sel  = np.concatenate([v_2d.sel(time = ti, range = r) for ti in Tlist], axis =1)
+            v2d_sel  = np.concatenate([v_2d.sel(time = ti, range = r) for ti in TimeList], axis =1)
             #Get the 2D Vertical velocity  
             #w =====> is the vertical component of the velocity
             w_2d     = df.velds.w
-            w2d_sel  = np.concatenate([w_2d.sel(time = ti, range = r) for ti in Tlist], axis =1)
+            w2d_sel  = np.concatenate([w_2d.sel(time = ti, range = r) for ti in TimeList], axis =1)
             ##########################
-            time     = np.concatenate([u_2d.sel(time = ti)['time'] for ti in Tlist])
+            time     = np.concatenate([u_2d.sel(time = ti)['time'] for ti in TimeList])
             #return values
             return   u2d_sel, v2d_sel, w2d_sel 
 
@@ -465,15 +474,28 @@ def Average(df, n_bin=1):
 
 def verical_grid():
     #number of vertical lines
-    num_vertical = 3
+    #num_vertical = 3
+    num_vertical = 8
     #generate spaced x-values for vertical grid lines
     vertical_locations = plt.MaxNLocator(num_vertical +2)
     
     return vertical_locations
 
 
+def start_endtime(time_serie):
+    #minimum time
+    tstart     = time_serie.min()
+    #tstart     = time_serie[0]
+    #Add one day to the minimum time
+    tend      = tstart + pd.to_timedelta(1, unit= 'D')
+    #tend       = time_serie[-1]
+    #Convert to minimum
+    tend       = tend.to_numpy()
+    return (tstart, tend)
+
+
 #def Scatt_Correct(df, Profile_range, angle = 20.0):
-def BSC_Correct(df, Tlist, alpha =0.6, nrange=25, MEAN = True):
+def BSC_Correct(df, TimeList, alpha =0.6, nrange=25, MEAN = True):
     #get the parameter
     beam_angle = df.velds.attrs['beam_angle']
     #get the Profile range
@@ -491,8 +513,8 @@ def BSC_Correct(df, Tlist, alpha =0.6, nrange=25, MEAN = True):
     #############################
     if(MEAN):
         #Loop over the list of the time
-        P  = np.concatenate([np.nanmean(df_beam_avg.sel(time = ti), axis =0) for ti in Tlist])
-        T  = np.concatenate([df_beam_avg.sel(time = ti)['time'] for ti in Tlist])
+        P  = np.concatenate([np.nanmean(df_beam_avg.sel(time = ti), axis =0) for ti in TimeList])
+        T  = np.concatenate([df_beam_avg.sel(time = ti)['time'] for ti in TimeList])
         #Correct the Bascatter
         PC = P * 0.43 + 20 * np.log10(R) + 2 *alpha * R
     else:
@@ -502,9 +524,9 @@ def BSC_Correct(df, Tlist, alpha =0.6, nrange=25, MEAN = True):
         #r           =  df_beam_avg.range
         r           =  df_beam_avg.range.data[:nrange]
         #Loop over the list of the time
-        Matrix2D    = np.concatenate([df_beam_avg.sel(time = ti, range = r) for ti in Tlist], axis =1 )
-        #time        = np.concatenate([df.amp.sel(time = ti) for ti in Tlist])
-        time        = np.concatenate([df.amp.sel(time = ti)['time'] for ti in Tlist])
+        Matrix2D    = np.concatenate([df_beam_avg.sel(time = ti, range = r) for ti in TimeList], axis =1 )
+        #time        = np.concatenate([df.amp.sel(time = ti) for ti in TimeList])
+        time        = np.concatenate([df.amp.sel(time = ti)['time'] for ti in TimeList])
         M2D_NEW     = []
         #for ir, slide in zip(np.arange(len(Matrix2D)), Matrix2D):
         for r_i, slide in zip(R, Matrix2D):
@@ -521,7 +543,7 @@ def BSC_Correct(df, Tlist, alpha =0.6, nrange=25, MEAN = True):
 
 
 #Define function
-def Plot_fig(ax, freqs, data, param, plot_loglog, linewidth=1.3,  **PARAMSDICT):
+def Plot_fig(ax, freqs, data, param, plot_loglog, linewidth=3.3,  **PARAMSDICT):
     #speed up figure plot
     #we set the beam angle here, 
     #beam_angle = 20.0
@@ -539,13 +561,9 @@ def Plot_fig(ax, freqs, data, param, plot_loglog, linewidth=1.3,  **PARAMSDICT):
         param = "WIND"
     #Check the user need the plot to be bigger
     if(plot_loglog):
-        #ax.plot(freqs, data, lw=1.0, linestyle ="-", color = color, alpha =1.0)
-        ax.loglog(freqs, data, lw=linewidth,  color = color, alpha =1.0)
+        ax.loglog(freqs, data, lw=linewidth,  color = color, alpha =1.0,label = param)
         if(param=='avg_BS'):
             ax.loglog(freqs, data, lw=linewidth,  color = color, alpha =0.5,label = param)
-        else:
-            ax.plot(freqs, data, lw=linewidth, color = color, alpha =0.5,label = param.title())
-            ax.loglog(freqs, data, lw=6.0, linestyle ="-", color = color, alpha =0.5,label = param)
     else:
         ax.plot(freqs, data, lw = linewidth, color = color, alpha =1.0, label = param)
         #ax.loglog(freqs, data/max(data), lw = linewidth, color = color, alpha =1.0, label = param)
@@ -599,13 +617,15 @@ def Plot_fig(ax, freqs, data, param, plot_loglog, linewidth=1.3,  **PARAMSDICT):
             #ax.set_ylim(1e+0 * 0.6,  1e+3 * 2)
             #ax.set_ylim(1e+0 * 0.6,  1e+4 * 2)
             ax.set_ylim(1e+0 * 0.6,  1e+5 * 1.5)
+            #ax.set_ylim(1e-1, 1e+6 *2 )
         else:
             #ax.set_ylim(1e-4 *0.2, 1e+1)
-            #ax.set_ylim(1e-4 *0.8, 3)
-            ax.set_ylim(1e-4 *0.8, 15)
+            ax.set_ylim(1e-4 *0.8, 3)
+            #ax.set_ylim(1e-4 *0.8, 15)
             #ax.set_ylim(1e-4 *0.8, 8)
             #ax.set_ylim(1e-4 *0.8, 2)
             #ax.set_ylim(1e-7, 0.1 *2)
+            #ax.set_ylim(1e-4 *0.8, 1e+2)
 #        #disable axis
         if(ix < len(PARAMSDICT) -1):
             #ax.xaxis.set_visible(False)
@@ -620,19 +640,67 @@ def Plot_fig(ax, freqs, data, param, plot_loglog, linewidth=1.3,  **PARAMSDICT):
         #    ax.set_xticks(custom_ticks)
         #    ax.set_xticklabels(custom_labels)
         #############################################################
+#function to find peaks
+def PeaksFunc(x, y, window_size=3):
+    #Find peaks in the magnitude spectrum
+    peaks, _ = find_peaks(y, height = np.mean(y))
+    ####################
+    avg_peaks_y = []
+    ################
+    peaks_x     = []
+    ####################
+    for peak in peaks:
+        start  = max(0, peak - window_size // 2)
+        end    = min(len(y), peak + window_size // 2 + 1)
+        avg_intensity = np.mean(y[start:end])  #Average within window
+        avg_peaks_y.append(avg_intensity)
+        peaks_x.append(x[peak])                #Store peak position
+    return np.array(peaks_x), np.array(avg_peaks_y)
 
 
 
-def Plot_waveforms_freq(ax, freqs, data, param, plot_loglog=False, linewidth=0.3,  **PARAMSDICT):
+def moving_average(y, window_size):
+    """Applies adjacent-averaging (moving average) smoothing to a spectrum."""
+      # Extend the spectrum at both ends to handle boundary conditions
+    return np.convolve(y, np.ones(window_size)/window_size, mode='valid')
+
+
+
+
+#def Plot_waveforms_freq(ax, freqs, data, param, plot_loglog=False, linewidth=0.3,  **PARAMSDICT):
+def Plot_waveforms_freq(ax, freqs, data, param, plot_loglog=False, linewidth=0.15,  **PARAMSDICT):
     #speed up figure plot
     print(max(data))
     plt.style.use('fast')
+    #############################
+    #Apply Savitzky-Golay smoothing
+    #Choose an odd window size
+    window_size  = 5   #3-5 → Less smoothing, keeps details
+    #window_size  = 10  #10-20→ More smoothing, removes noise.
+    #Smooth the spectrum
+    d_smooth     = moving_average(data, window_size)
+    freqs_smooth = freqs[:len(d_smooth)]
+    ####################smooth for the second time################################
+    window_size_2  = 20
+    dd_smooth     = moving_average(d_smooth, window_size_2)
+    ffreqs_smooth = freqs_smooth[:len(dd_smooth)]
+    #Find peaks in the spectrum
+    #peaks         = PeaksFunc(data)
+    #Compute peak averaging
+#    peaks_x, avg_peaks_y = PeaksFunc(freqs, data, window_size=5)
     ##Get the parameters
     ylabel, color, ix, txt = PARAMSDICT[param]
     pad = None
     #Check the user need the plot to be bigger
     if(plot_loglog):
-        ax.loglog(freqs, data, lw = linewidth, linestyle ="-", color = color, alpha =1.0, label = param)
+        #ax.loglog(freqs, data, lw = linewidth, linestyle ="-", color = color, alpha =1.0, label = param)
+        ax.loglog(freqs_smooth, d_smooth, lw = linewidth, linestyle ="-", color = 'r', alpha =0.9, label = param)
+        ax.loglog(ffreqs_smooth, dd_smooth, lw = 0.2, linestyle ="-", color = 'k', marker='o', markersize=0.2, alpha =1.0)
+        ##########################
+        #ax.loglog(peaks_x, avg_peaks_y, lw = 0.2, linestyle ="-", color = 'k', alpha =1.0, label = param)
+        #c = np.random.random(len(freqs))       #color of points
+        #s = 500 * np.random.random(len(data))  #size of points
+        #ax.scatter(np.log10(freqs),  np.log10(data), c=c, s=s, cmap = plt.cm.jet)
     else:
         #ax.loglog(freqs, data, lw = linewidth, linestyle ="-", color = color, alpha =1.0, label = param)
         ax.plot(freqs, data, lw = linewidth, linestyle ="-", color = color, alpha =1.0, label = param)
@@ -648,16 +716,18 @@ def Plot_waveforms_freq(ax, freqs, data, param, plot_loglog=False, linewidth=0.3
     ##Write the text on the figure
     #ax.annotate(txt , xy=(xp, yp), fontsize = f_size)
     ############
-    if(float(ymax) < 0.01):
-        ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+#    if(float(ymax) < 0.01):
+#        ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
     #Add the legend
     #ax.legend(loc="upper right")
     #Set label
     #ax.set_ylabel(r'PSD $(\mathrm{m^2s^{-2}/Hz})$', labelpad = pad, fontsize = 14)
-    ax.set_ylabel(ylabel, labelpad = pad, fontsize = 14)
-    ax.set_xlabel('Frequency (Hz) ', fontsize = 14)
+    #ax.set_ylabel(ylabel, labelpad = pad, fontsize = 14)
+    ax.set_ylabel(ylabel, labelpad = pad, fontsize = 22)
+    #ax.set_xlabel('Frequency (Hz) ', fontsize = 14)
+    ax.set_xlabel('Period (s) ', fontsize = 22)
     #fontsize of the yticks
-    ax.tick_params(axis='both', labelsize=14)
+    ax.tick_params(axis='both', labelsize=22)
     #number of vertical lines for grid
     locations = verical_grid()
 #    ax.xaxis.set_major_locator(locations)
@@ -665,27 +735,199 @@ def Plot_waveforms_freq(ax, freqs, data, param, plot_loglog=False, linewidth=0.3
 #    ax.grid(visible = True, axis = "both", alpha = 0.7)
     #plot the log scale
     #ax.set_xlim(0.001, 1.0)    #good for loglog scale
+    ax.set_xlim(min(freqs), 1e+4)    #good for loglog scale
+    #ax.set_xlim(min(freqs), 1e+3 *2)    #good for loglog scale
     #linear scale
-    if("waveform"==param):
-        if(plot_loglog):
-            ax.set_ylim(1e-11,  1e-1)  #for loglog
-            #ax.set_ylim(1e-11,  1e+3 * 2)  # Test for non-resampling for loglog
-        else:
-            ax.set_ylim(1e-11,  0.028)
-            ax.set_xlim(0.001, 0.6)
-    elif("pressure" in param):
-        if(plot_loglog):
-            ax.set_ylim(1e+1 , 1e+9 * 3) #for loglog
-            #ax.set_ylim(1e+1 , 1e+14* 4) # Test for non-ressampling loglog
-        else:
-            ax.set_ylim(1e+1 , 1e+10 * 0.6) 
-            ax.set_xlim(0.001, 0.6)
+#    if("waveform"==param):
+#        if(plot_loglog):
+#            #ax.set_ylim(1e-10,  1e+3*2)  #for loglog periods
+#            ax.set_ylim(1e-10,  1e+0)  #for loglog periods
+#            #ax.set_ylim(1e-11,  1e-1)  #for loglog
+#            #ax.set_ylim(1e-11,  1e-8)  #for loglog
+#            #ax.set_ylim(1e-11,  1e+3 * 2)  # Test for non-resampling for loglog
+#        else:
+#            ax.set_ylim(1e-11,  0.028)
+#            ax.set_xlim(0.001, 0.6)
+#    elif("pressure" in param):
+#        if(plot_loglog):
+#            #ax.set_ylim(1e+0 *2 , 1e+14) #for loglog periods
+#            ax.set_ylim(1e+0 *2 , 1e+10) #for loglog periods
+#            #ax.set_ylim(1e+1 , 1e+9 * 3) #for loglog
+#            #ax.set_ylim(1 , 1e+3) #for loglog
+#            #ax.set_ylim(1e+1 , 1e+14* 4) # Test for non-ressampling loglog
+#        else:
+#            ax.set_ylim(1e+1 , 1e+10 * 0.6) 
+#            ax.set_xlim(0.001, 0.6)
 ################
+def RealTime(time):
+    #Calculate the time step
+    time_step = np.diff(time)
+    #set the time step in minutes
+    time_step_minutes = time_step.astype('timedelta64[m]').astype(int)
+    #build the new time in real
+    time_new = np.arange(0, 24 *60  , time_step_minutes[0])
+    #return the new time
+    return (time_new, time_step_minutes[0])
+
+#def wavelet_transform(times, signal):
+#def compute_wavelet_transform(time, signal, sampling_period=None):
+def compute_wavelet_transform(signal, sampling_period=None):
+    wavelet = 'cmor'
+    #wavelet = 'mexh'
+    ##get the new time and the time step
+    #time_new, time_step = RealTime(time)
+    ##set the time step in seconds
+    #time_step = time_step * 60
+    #cwtmatr, freqs = pywt.cwt(sig, widths, 'mexh')
+    #sampling_period = 10  # 10-minute intervals
+    #sampling_period          = 0.1667 #sampling/hours
+    #min_frequency = 0.01  # Minimum frequency (cycles per minute)
+    #max_frequency = 0.5   # Maximum frequency (cycles per minute)
+    ##Wavelet function and scale-to-frequency conversion constant (for Morlet)
+    #k = 1.0  # Approximation for Morlet wavelet
+    ## Convert frequency range to scales
+    #min_scale = k / (max_frequency * sampling_period)
+    #max_scale = k / (min_frequency * sampling_period)
+    ## Generate scales (logarithmic spacing for better resolution at low frequencies)
+    #scales = np.logspace(np.log10(min_scale), np.log10(max_scale), num=100)
+    #Don't change the scales expect you understand what you are doing
+    #Our scales depends on the frequencies we need the visualize, in this is between [0.0,  0.5]
+    #scales = np.arange(0.1, 10)
+    #scales = np.arange(0.08, 11)
+    scales = np.arange(0.08, 60)
+    #coefs, freqs = pywt.cwt(signal, scales, wavelet, sampling_period=t[1] - t[0])
+    if(sampling_period != None):
+        coefs, freqs = pywt.cwt(signal, scales, wavelet, sampling_period= sampling_period)
+    else:
+        coefs, freqs = pywt.cwt(signal, scales, wavelet)
+    return(coefs, freqs)
+
+def Plot_2D_Wavelet(ax, fig_ob,  times, data, param, **PARAMSDICT):
+   #get the parameter, the index of the corresponding axis, and the color
+    _ , color, ix, _ = PARAMSDICT[param]
+    #set the wavelet type
+    #set the scales which is the frequency range in which you want to plot 
+    time_new, time_step  = RealTime(times)
+    #set the time step in seconds
+    #time_step           = time_step * 60
+    time_step           = 0.1667 #sampling/hours
+    #time_step           = 10
+    #compute the wavelet transform
+    coefs, freqs         = compute_wavelet_transform(data, sampling_period= time_step)
+    #coefs, freqs         = compute_wavelet_transform(data, sampling_period= None)
+    #print(freqs)
+    #exit()
+    #############Plot the wavelet transform ######################
+    #ax.imshow(np.abs(coefs), extent=[0, 1, 1, 128], cmap='PRGn', aspect='auto',vmax= abs(coefs).max(), vmin= -abs(coefs).max())
+    #get the new time
+    ##get the start and the endtime
+    tstart, tend  =  start_endtime(time)
+    ####### Convert 'numpy.datetime64' ==>  'datetime.datetime'
+    startdatetime = pd.to_datetime(tstart).to_pydatetime()
+    enddatetime   = pd.to_datetime(tend).to_pydatetime()
+    ############################################
+    start_num     = mdates.date2num(startdatetime)
+    end_num       = mdates.date2num(enddatetime)
+    #Set some generic y-limits.
+    periods       = 1./freqs
+    y_lims        = [0, max(periods)]
+    #Set the extent for 2D plot
+    extent        = [start_num , end_num,  y_lims[0], y_lims[1]]
+    #############Plot the wavelet transform ######################
+    contour       = ax.contourf(times, periods, np.abs(coefs), levels=10, cmap='viridis', extent= extent)
+    ###############make the contour line #######################
+    # Add black contour lines
+    ax.contour(times, periods, np.abs(coefs), 5, colors='k', alpha=0.5)  # Add contour lines at 10 levels
+    ax.set_yscale('log') # Logarithmic scale for better visualization
+    ############set y-limit #######
+   # ax.set_ylim(0, 1e+1 * 1.6)
+    #make the average
+    coefs_avg   = np.mean(np.abs(coefs), axis= 1)
+    #Create a new inset axis for plotting the average (with some space between ax and ax2)
+#    ax2 = inset_axes(ax, width="5%", height="100%", loc="upper right", borderpad=20)  # Adjust the borderpad to create space
+#    #Plot the average along the x-axis on the inset axis
+#    #ax2.plot(periods, coefs_avg, color='black', linestyle='--', label='Average along X', linewidth=2)
+#    ax2.plot( coefs_avg, periods, color='black', linestyle='--', linewidth=2)
+#    #Label the new y-axis
+#    ax2.set_ylabel('Average Magnitude', color='black')
+#    #Add grid, show legend for the new axis
+#    #ax2.grid(True)
+#    ax2.set_yscale('log') # Logarithmic scale for better visualization
+#    ax2.legend(loc='upper right')
+#    print(times.shape, periods.shape, np.abs(coefs).shape, coefs_avg.shape)
+#    print(coefs_avg)
+#    exit()
+
+
+    #set the colorbar 
+    #Add the colorbar using the figure's method,telling which mappable we're talking about and
+    #which axes object it should be near Calculate the colorbar position and size
+    bbox        = ax.get_position()
+    cbar_width  = 0.02
+    cbar_height = bbox.height
+    cbar_x      = bbox.x1 + 0.03
+    cbar_y      = bbox.y0
+    #set the colorbar to right
+    ################ linear plot #########
+    #ax.set_ylabel('Periods (second)', labelpad = pad, fontsize = 14)
+    #ax.set_ylabel('Period (seconds)', fontsize = 14)
+    ax.set_ylabel('Period (cycle/hour)', fontsize = 14)
+    ax.set_xlabel('Time (Days) ', fontsize = 14)
+    #Check the length of the Dictionary
+    if(ix < len(PARAMSDICT) -1):
+        #ax.xaxis.set_visible(False)
+        #ax.xaxis.set_ticklabels([])
+        #Remove x-axis labels using NullFormatter
+        #ax.xaxis.set_major_formatter(NullFormatter())
+        #ax.axis('off')
+        ax.xaxis.set_visible(False)
+        #set the colorbar
+        cbar_ax    = fig_ob.add_axes([cbar_x , cbar_y -0.2, cbar_width, cbar_height])
+        fig_ob.colorbar(contour, cax=cbar_ax, label = "Magnitude")
+        cbar_ax.yaxis.set_label_position("right")
+    #Check the parameters
+    if('wind' in param):
+        param = 'Wind'
+        ax.annotate(
+        param,     # Text for the annotation
+        xy=(0.0089, 0.25),                   # Coordinates (relative to axes) for the annotation
+        xycoords='axes fraction',    # Use axes fraction for positioning
+        fontsize=16,                 # Font size for the annotation
+        #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
+        bbox=dict(boxstyle='square', facecolor='white', edgecolor='white', alpha=0.5)  # Box style
+        )
+    elif('velocity' in param):
+        param = 'Current'
+        ax.annotate(
+        param,     # Text for the annotation
+        xy=(0.0089, 0.25),                   # Coordinates (relative to axes) for the annotation
+        xycoords='axes fraction',    # Use axes fraction for positioning
+        fontsize=16,                 # Font size for the annotation
+        #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
+        bbox=dict(boxstyle='square', facecolor='white', edgecolor='white', alpha=0.5)  # Box style
+        )
+
+    #fontsize of the yticks
+    ax.tick_params(axis='both', labelsize=14)
+    ## Add black contour lines
+    #number of vertical lines for grid
+    locations = verical_grid()
+    ax.xaxis.set_major_locator(locations)
+    #format time-axis
+    #format='%y %m %d %H %M %S'
+    #Set xlim of x-axis
+    #ax.set_xlim(tstart, tend)
+    #ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    #ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))  # Format: YYYY-MM-DD
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))  # Format: YYYY-MM-DD
+    ax.xaxis.set_major_locator(mdates.DayLocator())  # Set ticks to daily intervals
 
 
 
 
-def FFT(data, sampling_rate):
+
+
+def FFT(data, sampling_rate=1):
     """
     Perform FFT on velocity data and plot frequency spectrum.
     Parameters:
@@ -696,7 +938,7 @@ def FFT(data, sampling_rate):
         power (numpy.ndarray): Power of the frequency spectrum.
     """
     #set the sampling_rate to
-    sampling_rate = 1.0
+    #sampling_rate = 1.0
     #Detrend the data to remove linear trends
     mean = np.mean(data) 
     data = data - mean
@@ -722,14 +964,21 @@ def FFT(data, sampling_rate):
 
     #positive_freqs = freq_sorted
     #positive_power = power_sorted
-    
+    positive_freqs = 1./positive_freqs 
     #return value
     return (positive_freqs, positive_power)
+    #return (positive_freqs, positive_power/max(positive_power))
     #return (positive_freqs *1000, positive_power)
 
 
 
-
+def FFT_SCP(data, sampling_rate=1.0):
+    #Convert seismogram to periods
+    freqs, times, Sxx = signalscp.spectrogram(data, fs=sampling_rate, detrend='constant', scaling='density', mode='psd')
+    periods = 1.0 / freqs
+    #power spectral
+    power   = np.mean(Sxx, axis=1)
+    return (periods, power)
 
 
 def Reset_axis(ax):
@@ -768,6 +1017,8 @@ ADCP_DOWN_HEIGTH_FROM_LAKEBED = Fig_params['ADCP_DOWN_HEIGTH_FROM_LAKEBED']  #in
 ADCP_UP_HEIGTH_FROM_LAKEBED   = Fig_params['ADCP_UP_HEIGTH_FROM_LAKEBED']  #in meter
 #Plot Option
 Remove_frame   = Fig_params["Remove_frame"]
+#check if plot wavelet_transform
+wavelet_transform   = Fig_params["wavelet_transform"]
 #Seimic mseed file
 mseedFile      =   Fig_params['mseedFile']
 mseedFileP      =   Fig_params['mseedFileP']
@@ -948,12 +1199,13 @@ if(waveform):
     param      = "waveform"
     lw         =0.3
     #get the seismogram from mseedFile
-    time, data, Title = read_mseed(STARTDATE, mseedFile, Response_File, bandpass,resampling=True)
+    time, tr, Title = read_mseed(STARTDATE, mseedFile, Response_File, bandpass,resampling=False)
     #get the parameter, the index of the corresponding axis, and the color
     _ , color, ix, _ = PARAMSDICT[param]
     fs = 1.0
     #Set the Title
-    freqs, power = FFT(data, fs)
+    freqs, power = FFT(tr.data, sampling_rate =tr.stats.sampling_rate)
+    #freqs, power = FFT_SCP(tr.data, sampling_rate =tr.stats.sampling_rate)
     #Plot the spectogram
     Plot_waveforms_freq(axs[ix], freqs, power, param, plot_loglog, **PARAMSDICT)
 
@@ -963,12 +1215,13 @@ if(pressure_waveform):
     param      = "pressure_waveform"
     lw         =0.3
     #get the seismogram from mseedFile
-    time, data, Title = read_mseed(STARTDATE, mseedFileP, Response_File, bandpass, resampling=True, Pressure = True)
+    time, tr_, Title = read_mseed(STARTDATE, mseedFileP, Response_File, bandpass, resampling=False, Pressure = True)
     #get the parameter, the index of the corresponding axis, and the color
     _ , color, ix, _ = PARAMSDICT[param]
     fs = 1.0
     #Set the Title
-    freqs, power = FFT(data, fs)
+    freqs, power = FFT(tr_.data, sampling_rate =tr_.stats.sampling_rate)
+    #freqs, power = FFT_SCP(tr_.data,sampling_rate =tr_.stats.sampling_rate)
     #Plot the spectogram
     Plot_waveforms_freq(axs[ix], freqs, power, param, plot_loglog, **PARAMSDICT)
 
@@ -996,9 +1249,13 @@ if(velocity_up):
    freqs, power = FFT(data, fs_up)
    #get the parameter, the index of the corresponding axis, and the color
    _ , color, ix, _ = PARAMSDICT[param]
-   #Plot the figure by calling the plotting function
-   Plot_fig(axs[ix], freqs, power, param, plot_loglog, linewidth= 1.2,  **PARAMSDICT)
-   #Plot the figure by calling the plotting function
+   #check if plot wavelet_transform
+   if(wavelet_transform):
+       Plot_2D_Wavelet(axs[ix], fig,  time, data, param, **PARAMSDICT)
+   else:
+        #Plot the figure by calling the plotting function
+        Plot_fig(axs[ix], freqs, power, param, plot_loglog, linewidth= 1.2,  **PARAMSDICT)
+        #Plot the figure by calling the plotting function
 if(velocity_down):
    #set the parameter
    param      = "velocity_down"
@@ -1007,9 +1264,14 @@ if(velocity_down):
    freqs, power = FFT(data, fs_down)
    #get the parameter, the index of the corresponding axis, and the color
    _ , color, ix, _ = PARAMSDICT[param]
-   #Plot the figure by calling the plotting function
-   Plot_fig(axs[ix], freqs, power, param, plot_loglog, **PARAMSDICT)
-   #Plot the figure by calling the plotting function
+   #check if plot wavelet_transform
+   if(wavelet_transform):
+       #Plot_2D_Wavelet(axs[ix], time, data)
+       Plot_2D_Wavelet(axs[ix], fig,  time, data, param, **PARAMSDICT)
+   else:
+        #Plot the figure by calling the plotting function
+        Plot_fig(axs[ix], freqs, power, param, plot_loglog, linewidth= 1.2,  **PARAMSDICT)
+        #Plot the figure by calling the plotting function
 ######################## velocity up ####################
 if(vertical_vel_up):
        #set the parameter
@@ -1198,18 +1460,36 @@ if(avg_BS_down):
 if(wind_speed):
     #set the parameter
     param         = "wind_speed"
-    #get the Dischage data for the corresponding time
+    #get the wind-velocity data 
     time, data    = Extract_database(d_mteo,  date_list_UTC, param)
     freqs, power  = FFT(data, fs_wind)
+    #print(time)
+    ##Calculate the time step
+    #time_step = np.diff(time)
+    #time_step_minutes = time_step.astype('timedelta64[m]').astype(int)
+    #print(type(time))
+    #print("----" *20)
+    #print(time_step_minutes)
+    #print("----" *20)
+    #time_new = np.arange(0, 24 *60  , time_step_minutes[0])
+    #print(len(time))
+    #print(len(time_new))
+    #exit()
     #get the parameter, the index of the corresponding axis, and the color
     _ , color, ix, _ = PARAMSDICT[param]
-    #Plot the figure by calling the plotting function, plot_twinx
-    Plot_fig(axs[ix], freqs, power, param, plot_loglog, **PARAMSDICT)
+   #check if plot wavelet_transform
+    if(wavelet_transform):
+       #Plot_2D_Wavelet(axs[ix], time, data)
+       Plot_2D_Wavelet(axs[ix], fig,  time, data, param, **PARAMSDICT)
+    else:
+        #Plot the figure by calling the plotting function
+        Plot_fig(axs[ix], freqs, power, param, plot_loglog, linewidth= 1.2,  **PARAMSDICT)
+        #Plot the figure by calling the plotting function
 
 if(wind_direction):
     #set the parameter
     param         = "wind_direction"
-    #get the Dischage data for the corresponding time
+    #get the direction data 
     time, data    = Extract_database(d_mteo,  date_list_UTC, param)
     freqs, power  = FFT(data, fs_wind)
     #get the parameter, the index of the corresponding axis, and the color
@@ -1244,7 +1524,10 @@ if(pressure_waveform):
     fig.subplots_adjust(wspace=0.3)
 else:
     figname   = "ADCP-%s_%s_of_%s_freqs.png"%(EXT, basename, STARTDATE)
-    axs[nfigs -1].set_xlabel('Frequency (Hz) ', fontsize = 13)
+if(wavelet_transform):
+    axs[nfigs -1].set_xlabel('Time (Days) ', fontsize = 13)
+    #### Write on the x-axis
+    #axs[nfigs -1].set_xlabel('Time (hour:minute) on %s'%(STARTDATE), fontsize = 13)
 ##Space between the subplots
 if(nfigs <= 5):
     plt.subplots_adjust(hspace = fig_space)
