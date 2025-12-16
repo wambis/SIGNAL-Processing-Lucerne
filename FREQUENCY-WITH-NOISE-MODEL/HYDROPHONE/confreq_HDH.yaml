@@ -1,0 +1,73 @@
+#parameter for histogram plot
+#Discharge event
+#mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-22.mseed']
+mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HDH-2023-09-22.mseed']
+#Wind event
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH1-2024-03-29.mseed']
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-03-29.mseed']
+#Earthquale file
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH1-2024-01-01.mseed']
+
+#mseedFiles: ['DATASELECT/STATION09/XJ_MUS09_HH3-2024-01-04.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HH1-2024-01-04.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HDH-2024-01-04.mseed']
+#
+#  
+##############  
+#Discharge event
+mseedFile_Land: 'LANDMUO_DATA/MUO.CH_2023-09-22.mseed'
+#Wind event
+#mseedFile_Land: 'LANDMUO_DATA/MUO.HH_2024-03-29.mseed'
+#mseedFile_Land: 'LANDMUO_DATA/MUO.BH_2024-03-29.mseed'
+#Eartquake event
+#mseedFile_Land: 'LANDMUO_DATA/MUO_2024-01-01.mseed'
+#Response file
+Response_File_OBS: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+#Land based station Response file
+Response_File_Land: 'LANDMUO_DATA/MUO_2023-10-23.xml'
+#Erased ylabel, do not set it to true except you know what you're doing
+Erased_ylabel: False
+#Erased xlabel do not set it to true except you know what you're doing
+Erased_xlabel: False
+#show noise model level names (NLNM and New High Noise Model NHNM)
+show_nm_names: False
+#####specify the station type you want to plot the spectrum (NB: it should be OBS or Landbase")
+#You should either plot OBS or Landbased, but not both at the same time 
+Station_Type: {"OBS": True,
+              "Landbased": False}
+#Window dictionary, if "Windowing" is True then to need to specify the window, if not you are plotting the entire trace
+#do not change "nwindows", please keep 1
+WindowingDict: {"Windowing": True, "nwindows": 1}
+#Correpondance between OBS componet and landbased station component
+OBS_Landbased_comps: {'HH1':'Z', 'HH2':'N', 'HH3': 'E', 'HDH': 'None'}
+#set the period limit you want to visualize
+period_lim: [0.1, 200]
+#period_lim: [0.01, 1000]
+###heure:minutes:seconds
+#start_1: "00:00:00" #Good for 2023-09-22
+#tend_1:  "02:00:00" #Good or 2023-09-22
+
+start_1: "07:00:00" #Good for 2023-09-22
+tend_1:  "12:00:00" #Good or 2023-09-22
+##############
+#start_1: "21:00:00" #Good for 2023-09-22
+#tend_1:  "23:00:00" #Good or 2023-09-22
+#%%%%%%% WIND event%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#start_1: "07:12:00" #Good for 2024-03-29
+#tend_1:  "11:00:00" #Good or 2024-03-29
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%Earthquake event%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#start_1: "07:12:00" #Good for 2024-01-01
+#tend_1:  "08:15:00" #Good or 2024-01-01
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+############
+#Make your plot bigger
+#plot_bigger: False
+#Set the space between the figures
+#fig_space: 0.1
+#set the figure size
+#fig_width: 10
+#fig_height: 12
+#Set the bandpass
+#Just removed instrument response
+#bandpass: '0.006-0.01-100-550'
