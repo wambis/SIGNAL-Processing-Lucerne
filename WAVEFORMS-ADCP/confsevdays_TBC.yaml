@@ -45,7 +45,20 @@
 #                          }
              ###             
 
-#%%%%%%%%%%%%%%% Quiete Day %%%%%%%%%%%%%%%%%%%%%%%%%%%
+mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-27.mseed','DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-28.mseed', 
+             'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-29.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-30.mseed'}
+################################## Data for Vinz ################################
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-17.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-18.mseed'}
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-09-17.mseed', 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-09-18.mseed'}
+
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-16.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-17.mseed', 
+#             'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-18.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-19.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-20.mseed'}
+##################### Vinz ########### #
+#mseedFiles: {'DATASELECT/STATION04/XJ_MUS04_HDH-2023-09-17.mseed', 'DATASELECT/STATION04/XJ_MUS04_HDH-2023-09-18.mseed', 
+#             'DATASELECT/STATION04/XJ_MUS04_HDH-2023-09-19.mseed'}
+#
+##%%%%%%%%%%%%%%% Quiete Day %%%%%%%%%%%%%%%%%%%%%%%%%%%
 #mseedFiles: {'DATASELECT/STATION08/XJ_MUS08_HH1-2024-01-13.mseed'}
 
 #%%%%%%%%%%%%%%% Discharge event %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,7 +66,13 @@
 #mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-21.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-22.mseed'}
 #mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-17.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-18.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-19.mseed'}
 #######################
-mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-25.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-26.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-27.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-28.mseed'}
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-25.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-26.mseed', 
+#            'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-27.mseed', 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-28.mseed',
+#            'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-29.mseed'}
+#
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-25.mseed', 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-26.mseed', 
+#            'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-27.mseed', 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-28.mseed',
+#            'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-29.mseed'}
 #mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-22.mseed'}
 #mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-09-22.mseed'}
 #######################%%%%%%%%%%%%%%%%%%%%%%%%%################
@@ -171,24 +190,24 @@ dlnEcho_1D: False
 velocity_up: False
 velocity_down: False
 #2D velocity
-velocity2D_UP: False
-velocity2D_DOWN: False
+velocity2D_UP: True
+velocity2D_DOWN: True
 #Parameter to plot Vertical  Velocity, this actually the Vertical velocty given the componant w
-vertical_vel: False
+vertical_vel: True
 #Do want to plot water Pressure?
 pressure_up: False
 pressure_down: False
 #Plot 2D current direction
-veldir2D_UP: False
-veldir2D_DOWN: False
+veldir2D_UP: True
+veldir2D_DOWN: True
 #lake Temparature
 #Do want to plot water Temperature?
 temperature_up: False
 temperature_down: False
 #2D Temperature
 Temperature2D_MA: False
-Temperature2D_MB: False
-Temp1D_at_diff_depths_MA: True
+Temperature2D_MB: True
+Temp1D_at_diff_depths_MA: False
 Temp1D_at_diff_depths_MB: False
 #Water column temperature measure the thermistors
 Temperature_AVG: False
@@ -204,16 +223,18 @@ TemperatureAir: False
 #Plot Atm_pressure and Temperature #########
 Atm_pressure_Temp: False
 #Discharge  
-discharge: True
+discharge: False
 #plot the Lake Level
 Lake_Level: False
 #Plot Pressure fluctaution or seismic waves
 Pressure: False
 #plot the seismogram 
-waveform: True
+waveform: False
 ##################
-envelope: False
+envelope: True
 #############
+#instantanious frequency?
+Freq_inst: False
 #plot the pressure waveform
 pressure_waveform: False
 #plot the seismic energy
@@ -227,8 +248,8 @@ spectrogram: False
 #plot the probabilitic spectrogram density
 PPSD_spec: True
 #set the period limit you want to visualize
-period_lim: [0.1, 200]
-#period_lim: [10, 500]
+#period_lim: [0.1, 200]
+period_lim: [2, 250]
 #Plot Envelop
 #plot the seismic spectrogram?
 #set the depth index you want to plot, that from 0 -depth_idx
@@ -251,7 +272,7 @@ fig_height: 16
 #fig_height: 18
 #%%%%%%%%%%%%%%
 #Dictionary:
-PARAMSDICT: {'Atm_pressure_QFE': ['Patm (hPa)','seagreen'],  'Atm_pressure_QFF': ['Patm (hPa)','royalblue'] ,'TemperatureAir':['Air Temp (°C)', 'r'], 'Atm_pressure_Temp': ['Patm (hPa)','royalblue'],  'wind_speed':['Wind speed (m/s)', 'teal'], 'precipitation': ['Precipitation (mm)','blue'], 'discharge': ['Discharge (m³/s)','deepskyblue'],   'Lake_Level':['m a.s.l', 'teal'], 'wind_seismic_power':['Wind speed (m/s)', 'teal'], 'envelope':['Envelope (m/s²)','m'], 'waveform': ['ACC (µm/s²)','k'], 'pressure_waveform': [ 'Pressure (Pa)','k'], 'seismic_power': ['Power (dB)','k'], 'spectrogram': ['Freq (Hz)','RdYlBu_r'], 'PPSD_spec': ['Period (s)','RdYlBu_r'],  'pressure_up':['Pressure (bar)','blue'], 'pressure_down':['Pressure (bar)','blue'],
+PARAMSDICT: {'Atm_pressure_QFE': ['Patm (hPa)','seagreen'],  'Atm_pressure_QFF': ['Patm (hPa)','royalblue'] ,'TemperatureAir':['Air Temp (°C)', 'r'], 'Atm_pressure_Temp': ['Patm (hPa)','royalblue'],  'wind_speed':['Wind speed (m/s)', 'teal'], 'precipitation': ['Precipitation (mm)','blue'], 'discharge': ['Discharge (m³/s)','deepskyblue'],   'Lake_Level':['m a.s.l', 'teal'], 'wind_seismic_power':['Wind speed (m/s)', 'teal'], 'envelope':['Envelope (m/s²)','m'], 'waveform': ['ACC (µm/s²)','k'], 'Freq_inst': ['Hz','k'], 'pressure_waveform': [ 'Pressure (Pa)','k'], 'seismic_power': ['Power (dB)','k'], 'spectrogram': ['Freq (Hz)','RdYlBu_r'], 'PPSD_spec': ['Period (s)','RdYlBu_r'],  'pressure_up':['Pressure (bar)','blue'], 'pressure_down':['Pressure (bar)','blue'],
 'dlnEcho_1D':['dln(Echo)', 'r'], 'seismicpower_dlnEcho': ['dB re 1 m²/s⁴/Hz','k'],'velocity_up': ['Vel (m/s)', 'k'],'velocity_down': ['Vel (m/s)', 'grey'], 'vertical_vel': ['Vel (m/s)', 'c'],  'velocity2D_UP': ['Vel (m/s)', 'RdYlBu_r'], 'velocity2D_DOWN': ['Vel (m/s)', 'RdYlBu_r'], 'dlnEcho_UP': ['dln(Echo)', 'RdYlBu_r'], 'dlnEcho_DOWN': ['dln(Echo)', 'RdYlBu_r'], 'veldir2D_UP': ['degrees_CW_from_N', 'CMRmap'], 'veldir2D_DOWN': ['degrees_CW_from_N', 'CMRmap'], 'temperature_up': ['Temp (°C)', 'r'], 'temperature_down': ['Temp (°C)', 'm'], 'Temperature2D_MA': ['Temp (°C)', 'Reds'],'Temperature2D_MB': ['Temp (°C)', 'Reds'], 'Temp1D_at_diff_depths_MA':['Temp (°C)', 'm'] ,  'Temp1D_at_diff_depths_MB':['Temp (°C)', 'm'] ,  'Temperature_AVG':['Temp (°C)', 'm']}
 #Set the bandpass
 #bandpass: '35-40-85-100'
@@ -260,7 +281,12 @@ PARAMSDICT: {'Atm_pressure_QFE': ['Patm (hPa)','seagreen'],  'Atm_pressure_QFF':
 #bandpass: '38-45-80-100'
 #bandpass: '0.02-0.022-200-1000'
 #bandpass: '8-10-110-120'
-bandpass: '100-110-400-450'
+#bandpass: '100-110-400-450'
+#bandpass: '0.02-0.022-1000-1500'
+#For Vinz Data
+#bandpass: '5-10-35-40'
+#bandpass: '6.25-8.3-40-50'
+bandpass: '6.25-8.3-110-120'
 #bandpass: '0.02-0.022-1000-1500'
 #Just removed instrument response
 #bandpass: '0.02-0.022-200-1000'

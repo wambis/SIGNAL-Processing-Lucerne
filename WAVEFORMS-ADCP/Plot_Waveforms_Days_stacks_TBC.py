@@ -20,6 +20,9 @@ import numpy as np
 import matplotlib.dates as mdates
 import pandas as pd
 from tabulate import tabulate
+from scipy.signal import hilbert
+import seaborn as sns
+from scipy.ndimage import gaussian_filter1d
 #for interpolation
 #from scipy.interpolate import InterpolatedUnivariateSpline
 from matplotlib.ticker import MultipleLocator
@@ -148,8 +151,8 @@ def read_mseed(Date_of_Day, FILE, xmlFile, bandpass, Pressure=None):
         st.remove_response(inventory=inv, pre_filt=pre_filt, output="DEF",water_level=60)
     else:
         #Remove instrument response
-        #st.remove_response(inventory=inv, pre_filt=pre_filt, output="ACC",water_level=30)
-        st.remove_response(inventory=inv, pre_filt=pre_filt, output="ACC",water_level=60)
+        st.remove_response(inventory=inv, pre_filt=pre_filt, output="ACC",water_level=1e-8)
+        #st.remove_response(inventory=inv, pre_filt=pre_filt, output="ACC",water_level=60)
         #st.remove_response(inventory=inv, pre_filt=pre_filt, output="DISP",water_level=60)
         #st.remove_response(inventory=inv, pre_filt=pre_filt, output="VEL",water_level=60)
 
@@ -309,7 +312,8 @@ def Plot_fig(ax, time, data, ListDates, param, Plot_small= None, **PARAMSDICT):
     #gc.collect()
 
 ###plot the envelope
-def PlotEnvelop(ax, time,  tr_filt, ListDates, param, Pressure= False, linewidth=1.2, **PARAMSDICT):
+#def PlotEnvelop(ax, time,  tr_filt, ListDates, param, Pressure= False, linewidth=1.2, **PARAMSDICT):
+def PlotEnvelop(ax, time,  tr_filt, ListDates, param, Pressure= False, linewidth=0.5, **PARAMSDICT):
     #get the sampling rate
     plt.style.use('fast')
     ##Get the parameters
@@ -320,20 +324,29 @@ def PlotEnvelop(ax, time,  tr_filt, ListDates, param, Pressure= False, linewidth
         ylabel = "Pa"
     #get the data from the filtered trace
     #tr_filt.filter('bandpass', freqmin=1.0/200, freqmax=1.0/167, corners=2, zerophase=True) #Good for 2023-10-23
-    tr_filt.filter('bandpass', freqmin=1.0/200, freqmax= 1.0/158, corners=2, zerophase=True) #Good for 2023-10-23
-    #tr_filt.filter('bandpass', freqmin=0.006, freqmax= 0.015, corners=2, zerophase=True) #Good for 2023-09-02
-#    tr_filt.filter('bandpass', freqmin=0.004, freqmax= 0.01, corners=2, zerophase=True) #Good for 2023-09-02
-#    tr_filt.filter('bandpass', freqmin=0.002, freqmax= 0.009, corners=2, zerophase=True) #Good for 2023-09-02
+    data_signal = tr_filt.data.astype(float) # convert to float
+    # 2. Apply Hilbert Transform 
+    # --------------------------------------------------------- 
+    analytic_signal = hilbert(data_signal)     
+    data_envelope         = np.abs(analytic_signal)
     #get the start and the endtime
     tstart, tend  =  start_endtime(time, ListDates)
     #Envelope of filtered data
-    data_envelope = obspy.signal.filter.envelope(tr_filt.data)
+    #data_envelope = obspy.signal.filter.envelope(tr_filt.data)
+    window = 50    #number of samples to average 
+    #window = 150    #number of samples to average 
+    data_envelope = np.convolve(data_envelope, np.ones(window)/window, mode='same')
     #Plot the amplitude spectrum
+    #print(len(time), len(data_envelope))
+    #exit()
     #ax.plot(time, data_envelope, lw = linewidth, linestyle ="-", color = color, alpha =0.5, label = AphaDict[ix])
-    ax.plot(time, data_envelope, lw = linewidth, linestyle ="-", color = color, alpha =0.5)
+    ax.plot(time, data_envelope, lw = linewidth, linestyle ="-", color = color, alpha =0.8)
+    ax.plot(time, -1 * data_envelope, lw = linewidth, linestyle ="-", color = color, alpha =0.8)
+    ####plot the seismogram
+    #data_signal_new = np.convolve(data_signal, np.ones(window)/window, mode='same')
+    ax.plot(time, data_signal, lw = 0.35, linestyle ="-", color = 'k', alpha =0.5)
     #Fill the space between the Figure and the x-xais
     #ax.fill_between(time, data_envelope, color = 'r', alpha = 0.3)
-    ax.fill_between(time, data_envelope, color = color, alpha = 0.3)
     #get the minimum and the maximum of yaxis
     ymin, ymax    = ax.get_ylim()
     xmin, xmax    = ax.get_xlim()
@@ -341,21 +354,17 @@ def PlotEnvelop(ax, time,  tr_filt, ListDates, param, Pressure= False, linewidth
     #Write the text on the figure
     ax.annotate(
         AphaDict[ix],     # Text for the annotation
-        #xy=(0.0089, 0.94),                   # Coordinates (relative to axes) for the annotation
-        #xy=(0.0089, 0.92),                   # Coordinates (relative to axes) for the annotation
         xy=  xy_coords,                   # Coordinates (relative to axes) for the annotation
-        #xy=(0.0089, 0.90),                   # Coordinates (relative to axes) for the annotation
-        #xy=(0.0089, 0.72),                   # Coordinates (relative to axes) for the annotation
         xycoords='axes fraction',    # Use axes fraction for positioning
         fontsize= FsizeA,                 # Font size for the annotation
         #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
         bbox=dict(boxstyle='square', facecolor='white', edgecolor='k', alpha=0.5)  # Box style
     )
-    #Remove the frame on the plot
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.spines["left"].set_visible(False)
-    ax.spines["bottom"].set_visible(False)
+    ##Remove the frame on the plot
+    #ax.spines["top"].set_visible(False)
+    #ax.spines["right"].set_visible(False)
+    #ax.spines["left"].set_visible(False)
+    #ax.spines["bottom"].set_visible(False)
     ##################################
     #if(float(ymax) < 0.01):
 #        ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
@@ -371,13 +380,154 @@ def PlotEnvelop(ax, time,  tr_filt, ListDates, param, Pressure= False, linewidth
     #Set label
     #disable ticks on  x-axis
     ax.set_xticklabels([])
-    ax.set_yticklabels([])
+    #ax.set_yticklabels([])
     #Remove the ticks marks (small vertical lines) on the x-axis
     ax.tick_params(axis="both", length = 0, color= "white", width = 0)
     ax.tick_params(axis='both', labelsize=Figsize)
     ax.set_ylabel(ylabel, labelpad = pad, fontsize = Figsize)
     #Free memory by  manually trigger garbage collection
     gc.collect()
+
+
+def PlotFreq_inst(ax, ListmseedFiles, fmxl, ListDates, param, Pressure= False, linewidth=0.5, **PARAMSDICT):
+    #get the parameters  value from the Dictionary
+    #set the limit periods to compute the ppsd
+    ylabel, color, ix = PARAMSDICT[param]
+    #Create an empty stream
+    stream       = Stream()
+    #Loop over the List of mseedFiles
+    for fi,  mfile in zip(range(len(ListmseedFiles)), sorted(ListmseedFiles)):
+        #add trace to a stream
+        stream += read(mfile)
+        #grap the Date
+    #Merge the traces into one if they are continuous
+    stream.merge(method=1)  # 'method=1' means interpolation if gaps are small
+    #Load station metadata (StationXML file)
+    #read the inventory file
+    inventory   = read_inventory(fmxl)
+    #Select first trace
+    ######################################
+    #stream[0].remove_response(inventory=inventory, output="ACC", pre_filt=(0.002, 0.0025, 45, 50), zero_mean=True, 
+    #                                water_level=60)
+    #Resample the trace
+    #stream[0].resample(sampling_rate = 1.0, window = 'hann', no_filter = True)
+    #Create PPSD object
+    #ppsd = PPSD(stream[0].stats, inventory, period_lim=period_limit)
+    if(Pressure):
+          #manually remove the response
+          #stream[0].remove_response(inventory=inventory, output="DEF", pre_filt=(0.005, 0.006, 45, 50), zero_mean=True, 
+          #water_level=60)
+          stream[0].remove_response(inventory=inventory, output="DEF", pre_filt=(0.002, 0.0025, 20, 33), zero_mean=True, 
+                                    water_level=60)
+    ###Add entire 24-hour waveform data
+    #get the data from the stram
+    datasignal     = stream[0].data.astype(float) 
+    #Hilbert transform --> analytic signal 
+    analytic_signal= hilbert(datasignal) 
+    #envelope 
+    envelope       = np.abs(analytic_signal)
+    #Normalize envelope (0–1) 
+    envelope_norm  = envelope / np.max(envelope)
+    #Instantaneous phase 
+    inst_phase     = np.unwrap(np.angle(analytic_signal))
+    #clean the memory
+    gc.collect()  # Force garbage collection
+    #Original data
+    #Extract the time from the from the stram
+    times          = stream[0].times()
+    #Sampling frequency 
+    fs             = stream[0].stats.sampling_rate 
+    #Instantaneous frequency 
+    inst_freq      = np.diff(inst_phase) * fs / (2 * np.pi) 
+    #Time vector for frequency (one sample shorter) 
+    t_freq         = times[:-1]
+    #Convert the times into the matplotlib
+    time_nums      = mdates.date2num(t_freq)
+    #######################################################################
+    #Now we can delete the stream in order to free the memory
+    del stream
+    #creates a new time at midnight (00:00) of the next day (24:00 boundary)
+    #to Ensures your plot covers a full 24-hour period
+    #last_time   = times[-1]
+    #00:00 of day before
+    #start_time    = first_time.replace(hour=23, minute=59, second=0, microsecond=0) - timedelta(days=1)
+    #start_time_num = mdates.date2num(start_time)
+    #extended the last value of the times (last_time) to 24:00:00:00
+#    next_time   = last_time.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+#    #end_time      = last_time.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+#    #Convert the value to matplot time
+#    next_time_num = mdates.date2num(next_time) 
+#    #end_time_num  = mdates.date2num(end_time)
+#    #Adds a new axis (np.newaxis) to make it 2D so it can be horizontally stacked later
+#    last_column = Z_psd[:, -1][:, np.newaxis]             # shape: (n_periods, 1)
+#    #Horizontally appends the last column, repeating the last PSD value flat.
+#    #This is like saying “assume the last value continues until 24:00.”
+    #Extends the time array to include the extra right edge at midnight.
+    print(len(inst_freq), len(time_nums))
+    tstart   = pd.Timestamp(ListDates[0])
+    if len(ListDates) == 1: 
+        tend = tstart 
+    else: 
+        tend = tstart + pd.to_timedelta(len(ListDates), unit='D')
+        #tend     = tstart + pd.to_timedelta(len(ListDates), unit='D')
+    #Create a new time vector with same length as t_freq 
+    new_time = pd.date_range(start = tstart, end=tend, periods=len(t_freq)) 
+    #Convert to Matplotlib date numbers 
+    time_nums= mdates.date2num(new_time)
+    #smooth the data
+    window = 100    #number of samples to average
+    inst_freq = np.convolve(inst_freq, np.ones(window)/window, mode='same') 
+    #This matches the new column added to Z.
+    #ax.plot(time_nums, 1.0/inst_freq, lw = linewidth, linestyle ="-", color = color, alpha =0.5)
+    ax.plot(time_nums, inst_freq, lw = linewidth, linestyle ="-", color = color, alpha =0.5)
+    ##Remove negative and unrealistic values 
+    #inst_freq_clean = inst_freq[(inst_freq > 0) & (inst_freq < fs/2)]
+    ##print(len(inst_freq), len(time_nums))
+    ##exit()
+    #inst_freq_smooth = gaussian_filter1d(inst_freq_clean, sigma=3)
+    ##Amplitude weighting (FFT-like) 
+    #env_clean = envelope_norm[:len(inst_freq_clean)] 
+    #weights   = env_clean
+    ##make them a 1D array
+    #inst_freq_smooth = np.asarray(inst_freq_smooth).ravel() 
+    #weights          = np.asarray(weights).ravel()
+##################################################################################################
+    #ax.hist(x=inst_freq_smooth, bins=200, weights=weights, density=True, color='steelblue')
+    ##KDE 
+    #sns.kdeplot(x=inst_freq_smooth, weights=weights, fill=True, bw_adjust=0.05, ax=ax)
+    #sns.kdeplot(inst_freq, fill=True, bw_adjust=0.5, ax=ax)  # <‑‑ this is the key 
+    ##############################################################
+    #Fill the space between the Figure and the x-xais
+    #get the coordinate of the point, where to write the text
+    #Write the text on the figure
+    ax.annotate(
+        AphaDict[ix],     # Text for the annotation
+        xy=  xy_coords,                   # Coordinates (relative to axes) for the annotation
+        xycoords='axes fraction',    # Use axes fraction for positioning
+        fontsize= FsizeA,                 # Font size for the annotation
+        #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
+        bbox=dict(boxstyle='square', facecolor='white', edgecolor='k', alpha=0.5)  # Box style
+    )
+    #number of vertical lines for grid
+    locations = verical_grid()
+    ax.xaxis.set_major_locator(locations)
+#    #Make the grid of the axis
+#    ax.grid(visible = True, axis = "x", alpha = 0.7)
+    #get the start and the endtime
+    tstart, tend  =  start_endtime(time, ListDates)
+    #Set ylim of x-axis
+#    ax.set_xlim(tstart, tend)
+    #Set label
+    #disable ticks on  x-axis
+    ax.set_xticklabels([])
+    #ax.set_yticklabels([])
+    #Remove the ticks marks (small vertical lines) on the x-axis
+    ax.tick_params(axis="both", length = 0, color= "white", width = 0)
+    ax.tick_params(axis='both', labelsize=Figsize)
+    ax.set_ylabel(ylabel, labelpad = pad, fontsize = Figsize)
+    #Free memory by  manually trigger garbage collection
+    gc.collect()
+
 ##############################################################
 def Plot_Temp1D_at_depths(ax, fig_object, DataDict, ListDates, param, **PARAMSDICT):
     #get the colormap
@@ -537,9 +687,11 @@ def Plot_fig2D(ax, fig_object, df, time, data2D, ListDates, height_adcp,  ADCP_D
     ##if("velocity2D_" in param):
     #    vmind = 0.0; vmaxd = 0.04
     if("dlnEcho" in param):
+        vmind = -80; vmaxd =+80
         #vmind = -50; vmaxd =+50
         ##vmind = -40; vmaxd =+40
-        vmind = -20; vmaxd =+20 #Good for 2023-08-28
+        #vmind = -20; vmaxd =+20 #Good for 2023-08-28
+        #vmind = -5; vmaxd =+5 #Good for 2023-09-17 to 2023-09-18
     #####Test sur L'ADCP orientation
     if(ADCP_DOWN):
         #invert ticks values from positive to negative
@@ -1594,6 +1746,9 @@ waveform          = Fig_params['waveform']
 #get the envelope
 envelope          = Fig_params['envelope']
 #######################
+#instantanious frequency?
+Freq_inst         = Fig_params['Freq_inst']
+#########################
 seismic_power     = Fig_params['seismic_power']
 #######################
 wind_seismic_power = Fig_params['wind_seismic_power']
@@ -1769,9 +1924,9 @@ if(waveform):
     ###############################################
     #Plot_fig(axs[ix], time_tr, stream[0].data * 1e+6 / max(stream[0].data * 1e+6), DictDate, param, Plot_small= True, **PARAMSDICT)
     #set the limit
-    #axs[ix].set_ylim(-0.2, 0.2)
+#    axs[ix].set_ylim(-2, 2)
 #%%%%%%%%%%%%%%%Good for Discharge %%%%%%%%%%%%%%
-    axs[ix].set_ylim(-0.17, 0.17)
+#    axs[ix].set_ylim(-0.17, 0.17)
 #%%%%%%%%%%%%%%%Good for Wind event %%%%%%%%%%%%%%
     #axs[ix].set_ylim(-5.5, 5.5)
     #axs[ix].set_ylim(-6, 6)
@@ -1823,6 +1978,16 @@ if(envelope):
     _ , color, ix = PARAMSDICT[param]
     ##Plot the envelope
     PlotEnvelop(axs[ix], time_tr, stream[0], DictDate, param,  Pressure, linewidth=1.2, **PARAMSDICT)
+
+if(Freq_inst):
+    #set the corresponding parameter
+    param         = "Freq_inst"
+    #get the Dischage data for the corresponding time
+    #get the parameter, the index of the corresponding axis, and the color
+    _ , color, ix = PARAMSDICT[param]
+    #Plot the instantaneaous frequency
+    PlotFreq_inst(axs[ix], mseedFiles, Response_File, DictDate, param, Pressure, linewidth=0.5, **PARAMSDICT)
+
 
 #plot the spectrogram
 if(spectrogram):
