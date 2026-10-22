@@ -1,0 +1,29 @@
+#parameter for histogram plot
+mseedFiles: {'SeismicLucerne/muota-SingSta-05/mseed/2024/03/29/XJ_MUS05_HH1-2024-03-29.mseed',
+             'SeismicLucerne/muota-SingSta-05/mseed/2024/03/29/XJ_MUS05_HH2-2024-03-29.mseed',
+              'SeismicLucerne/muota-SingSta-05/mseed/2024/03/29/XJ_MUS05_HDH-2024-03-29.mseed'}
+#Response file
+Response_File: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+#Land based station Response file
+#Erased ylabel, do not set it to true except you know what you're doing
+###heure:minutes:seconds
+#
+start_1: "07:00:00" #Good for 2023-09-22
+tend_1:  "12:00:00" #Good or 2023-09-22
+##############
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#fig_space: 0.15
+fig_space: 0.1
+#fig_space: 0.25
+#set the figure size
+#fig_width: 12
+#fig_height: 11
+fig_width: 12
+fig_height: 13
+############
+#Make your plot bigger
+#plot_bigger: False
+#Set the space between the figures
+#Set the bandpass
+#Just removed instrument response
+bandpass: '8-10-90-100'
