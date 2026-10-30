@@ -1,0 +1,126 @@
+#parameter for histogram plot
+#Path of Seimic data
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed', 
+#              'DATASELECT/STATION03/XJ_MUS03_HH3-2023-10-23.mseed', 
+#             'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-23.mseed'}
+#
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-09-22.mseed',
+#              'DATASELECT/STATION03/XJ_MUS03_HH2-2023-09-22.mseed',
+#              'DATASELECT/STATION03/XJ_MUS03_HH3-2023-09-22.mseed',
+#              'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-22.mseed'
+#                }
+#
+#
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-27.mseed',
+#             'DATASELECT/STATION04/XJ_MUS04_HDH-2023-08-27.mseed',
+#             'DATASELECT/STATION05/XJ_MUS05_HDH-2023-08-27.mseed',
+#             'DATASELECT/STATION06/XJ_MUS06_HDH-2023-08-27.mseed',
+#             'DATASELECT/STATION07/XJ_MUS07_HDH-2023-08-27.mseed'}
+
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-27.mseed',
+#             'DATASELECT/STATION04/XJ_MUS04_HH1-2023-08-27.mseed',
+#             'DATASELECT/STATION05/XJ_MUS05_HH1-2023-08-27.mseed',
+#             'DATASELECT/STATION06/XJ_MUS06_HH1-2023-08-27.mseed',
+#             'DATASELECT/STATION07/XJ_MUS07_HH1-2023-08-27.mseed'}
+#                ##Response file
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-28.mseed',
+#             'DATASELECT/STATION04/XJ_MUS04_HH1-2023-08-28.mseed',
+#             'DATASELECT/STATION05/XJ_MUS05_HH1-2023-08-28.mseed',
+#             'DATASELECT/STATION06/XJ_MUS06_HH1-2023-08-28.mseed',
+#             'DATASELECT/STATION07/XJ_MUS07_HH1-2023-08-28.mseed'}
+######################################################################            
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-22.mseed',
+#             'DATASELECT/STATION04/XJ_MUS04_HH1-2023-09-22.mseed',
+#             'DATASELECT/STATION05/XJ_MUS05_HH1-2023-09-22.mseed',
+#             'DATASELECT/STATION06/XJ_MUS06_HH1-2023-09-22.mseed',
+#             'DATASELECT/STATION07/XJ_MUS07_HH1-2023-09-22.mseed'}
+#
+
+######################################################################            
+#mseedFiles: {'DATASELECT/STATION03/XJ_MUS03_HDH-2023-09-22.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-22.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH2-2023-09-22.mseed',
+#             'DATASELECT/STATION03/XJ_MUS03_HH3-2023-09-22.mseed'}
+#
+
+mseedFiles: {'LucerneData/muota-SingSta-05/mseed/2024/03/29/XJ_MUS05_HDH-2024-03-29.mseed',
+             'LucerneData/muota-SingSta-05/mseed/2024/03/29/XJ_MUS05_HH1-2024-03-29.mseed',
+             'LucerneData/muota-SingSta-05/mseed/2024/03/29/XJ_MUS05_HH2-2024-03-29.mseed'}
+
+#mseedFiles: {'LucerneData/muota-SingSta-05/mseed/2023/08/05/XJ_MUS05_HDH-2023-08-05.mseed',
+#             'LucerneData/muota-SingSta-05/mseed/2023/08/05/XJ_MUS05_HH1-2023-08-05.mseed',
+#             'LucerneData/muota-SingSta-05/mseed/2023/08/05/XJ_MUS05_HH2-2023-08-05.mseed',
+#             'LucerneData/muota-SingSta-05/mseed/2023/08/05/XJ_MUS05_HH3-2023-08-05.mseed'}
+
+#mseedFiles: {'LucerneData/muota-SingSta-05/mseed/2023/08/28/XJ_MUS05_HDH-2023-08-28.mseed',
+#             'LucerneData/muota-SingSta-05/mseed/2023/08/28/XJ_MUS05_HH1-2023-08-28.mseed',
+#             'LucerneData/muota-SingSta-05/mseed/2023/08/28/XJ_MUS05_HH2-2023-08-28.mseed',
+#             'LucerneData/muota-SingSta-05/mseed/2023/08/28/XJ_MUS05_HH3-2023-08-28.mseed'}
+#
+#mseedFiles: {'LucerneData/muota-SingSta-05/mseed/2023/12/11/XJ_MUS05_HDH-2023-12-11.mseed',
+#             'LucerneData/muota-SingSta-05/mseed/2023/12/11/XJ_MUS05_HH1-2023-12-11.mseed',
+#             'LucerneData/muota-SingSta-05/mseed/2023/12/11/XJ_MUS05_HH2-2023-12-11.mseed',
+#             'LucerneData/muota-SingSta-05/mseed/2023/12/11/XJ_MUS05_HH3-2023-12-11.mseed'}
+#
+
+#mseedFiles: {'LucerneData/muota-SingSta-03/mseed/2023/11/04/XJ_MUS03_HDH-2023-11-04.mseed',
+#             'LucerneData/muota-SingSta-03/mseed/2023/11/04/XJ_MUS03_HH1-2023-11-04.mseed',
+#             'LucerneData/muota-SingSta-03/mseed/2023/11/04/XJ_MUS03_HH2-2023-11-04.mseed',
+#             'LucerneData/muota-SingSta-03/mseed/2023/11/04/XJ_MUS03_HH3-2023-11-04.mseed'}
+#
+             ##Response_File: 'RESPOSE-FILE.XML/MUS03_response.xml'
+
+Response_File: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+#
+#STARTDATE: "2023-10-23"
+#Plot in a window, set this true if you're plottion a window in a one day
+Windowing: False
+#time_start: "09:00"
+#time_end:   "16:20"
+######################
+time_start: "19:55"  #good for 2023-08-28
+time_end:   "22:00"  #good for 2023-08-28
+############## #
+#time_start: "16:30"  #2023-08-28
+#time_end:   "17:30"  #2023-08-28
+##
+##New window
+#time_start: "07:00"
+#time_end:   "18:30"
+##Plot Options 
+Remove_frame: True
+#Plot Options
+#plot the seismogram 
+waveform: True
+pressure_waveform: False
+#Plot Envelop
+#plot the seismic spectrogram?
+#Provido the beam number on which you want to visualize the data correlation
+#Set the space between the figures
+fig_space: 0.057
+#fig_space: 0.19
+#fig_space: 0.25
+#set the figure size
+#fig_width: 12
+#fig_height: 11
+fig_width: 12
+fig_height: 13
+#Set the bandpass
+#Good Frequenci STATION01
+#bandpass: '38-45-80-100'
+#bandpass: '0.02-0.022-200-1000'
+#Good for pressure
+#bandpass: '6.25-8.3-40-50'
+##########################
+##Just removed instrument response
+#bandpass: '0.02-0.022-200-1000'
+#bandpass: '0.006-0.01-100-550'
+#%%%%%%%%%%%%%bandpass filter discharge on 2023-09-22 %%%%%%%%%%%%%%%%%%%%
+#bandpass: '25-30-100-120'
+#################
+bandpass: '8-10-110-120' #Good for 2023-08-27
+################
+#Just removed instrument response
+#bandpass_spec: '0.02-0.022-200-1000'
+#Just removed instrument response very Good
+bandpass_spec: '0.006-0.01-100-550'

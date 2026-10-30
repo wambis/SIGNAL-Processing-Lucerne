@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/wamba/disk3/WORKSPACE/GJR-PREPARE/SEVERAL-WAVEFORMS-PRESSURE/Plot_Waveforms.py", line 384, in <module>
+    Plot_fig(axs[ix], ix, time, data, cmp_, waveform=True)
+  File "/home/wamba/disk3/WORKSPACE/GJR-PREPARE/SEVERAL-WAVEFORMS-PRESSURE/Plot_Waveforms.py", line 173, in Plot_fig
+    network, station, component = Title.split("_")
+ValueError: not enough values to unpack (expected 3, got 1)
+Traceback (most recent call last):
+  File "/home/wamba/disk3/WORKSPACE/GJR-PREPARE/SEVERAL-WAVEFORMS-PRESSURE/Plot_Waveforms.py", line 384, in <module>
+    Plot_fig(axs[ix], ix, time, data, cmp_, waveform=True)
+  File "/home/wamba/disk3/WORKSPACE/GJR-PREPARE/SEVERAL-WAVEFORMS-PRESSURE/Plot_Waveforms.py", line 173, in Plot_fig
+    network, station, component = Title.split("_")
+ValueError: not enough values to unpack (expected 3, got 1)
