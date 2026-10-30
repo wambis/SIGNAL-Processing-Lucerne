@@ -21,8 +21,8 @@ AphaDict = {0:'(a)', 1: '(b)', 2: '(c)', 3: '(d)', 4: '(e)',
             5: '(f)', 6: '(g)', 7:'(h)', 8:'(i)', 9: '(j)',10:'(k)',
             11:'(l)', 12: '(m)',13: '(n)',14:'(o)', 15:'(p)', 16: '(q)'}
 #size for anotation
-#xy_coords = (0.71, 0.95)
-xy_coords   = (0.75, 0.95)
+#xy_coords   = (0.75, 0.95)
+xy_coords   = (0.85, 0.90)
 xy_coords_D = (0.75, 0.86)
 #set the fontsize
 Figsize= 18
@@ -120,9 +120,13 @@ def calculate_hvr_psd_log(file_Z, file_1, file_2, xmlfile, periode=None):
     #st = Stream([tr])
     inv= read_inventory(xmlfile)
     #Compute the ppsd
-    ppsd_z = PPSD(stZ[0].stats, metadata=inv, ppsd_length=3600)
-    ppsd_1 = PPSD(st1[0].stats, metadata=inv, ppsd_length=3600)
-    ppsd_2 = PPSD(st2[0].stats, metadata=inv, ppsd_length=3600)
+    #ppsd_z = PPSD(stZ[0].stats, metadata=inv, ppsd_length=60, period_smoothing_width_oct=0.1, period_step_octaves = 0.0625)
+    #ppsd_1 = PPSD(st1[0].stats, metadata=inv, ppsd_length=60, period_smoothing_width_oct=0.1, period_step_octaves = 0.0625)
+    #ppsd_2 = PPSD(st2[0].stats, metadata=inv, ppsd_length=60, period_smoothing_width_oct=0.1, period_step_octaves = 0.0625)
+
+    ppsd_z = PPSD(stZ[0].stats, metadata=inv, ppsd_length=900)
+    ppsd_1 = PPSD(st1[0].stats, metadata=inv, ppsd_length=900)
+    ppsd_2 = PPSD(st2[0].stats, metadata=inv, ppsd_length=900)
     #get the periods
     # 3. Add data to PPSD
     # ---------------------------------------------------------
@@ -133,9 +137,15 @@ def calculate_hvr_psd_log(file_Z, file_1, file_2, xmlfile, periode=None):
     T_z, mean_psd_z = ppsd_z.get_mean()
     T_1, mean_psd_1 = ppsd_1.get_mean()
     T_2, mean_psd_2 = ppsd_2.get_mean()
+    #################################################
 
-   # # Convert from dB to linear
-    # Convert from dB to linear
+    # 4. Extract median PSD curves
+# ---------------------------------------------------------
+#    T_z, mean_psd_z = ppsd_z.get_percentile(percentile=50)
+#    T_1, mean_psd_1 = ppsd_1.get_percentile(percentile=50)
+#    T_2, mean_psd_2 = ppsd_2.get_percentile(percentile=50)
+
+    #Convert from dB to linear
     mean_psd_z = 10 ** (mean_psd_z / 10)
     mean_psd_1 = 10 ** (mean_psd_1 / 10)
     mean_psd_2 = 10 ** (mean_psd_2 / 10)
@@ -148,7 +158,7 @@ def calculate_hvr_psd_log(file_Z, file_1, file_2, xmlfile, periode=None):
     # Compute H/V
     ## 4. Calculate H/V Ratio
     #h_mean = np.sqrt((mean_psd_1 + mean_psd_2) / 2)
-    h_mean    = np.sqrt(mean_psd_1**2 + mean_psd_2**2)
+    h_mean    = np.sqrt((mean_psd_1**2 + mean_psd_2**2)/4)
     hv_ratio = h_mean / mean_psd_z
     #---------------------------------------------------------
     ##return the result
@@ -182,10 +192,12 @@ def calculate_coherence(tr1, tr2):
 def QUALITY_CONTROL(T, HVR):
     #Select only periods below 4 s
     #mask     = T < 4        # period < 4s
+    #mask     = (T >= 1e-1) & (T < 3.5)        # period < 4s
     mask     = (T >= 1e-1) & (T < 4)        # period < 4s
     T_sel    = T[mask]
     HVR_sel  = HVR[mask]
-    if(np.max(HVR_sel) >10.1):
+    #if(np.max(HVR_sel) >10.1):
+    if(np.max(HVR_sel) >=7.0):
         control = 1
     else:
         control = 0
@@ -197,8 +209,9 @@ component_Z      = "HH1" #Vertical compenent of the seismogram
 compoent_2     = "HH2" #Vertical compenent of the seismogram
 compoent_3     = "HH3" #Vertical compenent of the seismogram
 #DEPTH of the seismic station in meter (m) in in the Lake Lucerne
-STATIONS_DEPTH = {"MUS03": 59, "MUS06": 71, "MUS07": 69, "MUS05": 49, "MUS04":41, "MUS08": 62, "MUS09": 59, "MUS10": 73}
-#STATIONS_DEPTH = {"MUS03": 59, "MUS05": 49, "MUS06": 71, "MUS08": 62}
+#STATIONS_DEPTH = {"MUS03": 59, "MUS06": 71, "MUS07": 69, "MUS05": 49, "MUS04":41, "MUS08": 62, "MUS09": 59, "MUS10": 73}
+#STATIONS_DEPTH = {"MUS08": 62}
+STATIONS_DEPTH = {"MUS05": 49}
 #STATIONS_DEPTH = {"MUS07": 69, "MUS05": 49, "MUS04":41, "MUS09": 59, "MUS10": 73}
 #open a dictionary
 FILEDICT  = dict()
@@ -233,13 +246,16 @@ for item in path.iterdir():
 
 #set params values
 #xlims  = (0.07, 10)        # works perfectly on log scale
-xlims  = (0.07, 7)        # works perfectly on log scale
+#xlims  = (0.07, 7)        # works perfectly on log scale
+xlims  = (0.07, 200)        # TEST
 ymin   = 0        # works perfectly on log scale
-ymax   = 100        # works perfectly on log scale
+#ymax   = 100        # works perfectly on log scale
+ymax   = 35        # works perfectly on log scale
+#ymax   = 200        # works perfectly on log scale
 #plt.xlabel('frequency [Hz]')
 xlabel = 'Period (s)'
 #plt.ylabel('Coherence')
-ylabel = 'HVSR (V/H)'
+ylabel = 'HVSR (H/V)'
 ####################
 nfigs  = 1
 ######################
@@ -285,13 +301,14 @@ for sta in FILEDICT:
         # --- QUALITY CONTROL BLOCK ---
         c, freq_sel, HVR_sel = QUALITY_CONTROL(freq, HVSR)
         #Skip if amp is NaN, too high, or too low
+        ##ax.loglog(freq, HVSR,  linewidth=0.5)
         if(c==1):
             #find the resonnance frequency
             #f0, amp = find_resonance_frequency(freq_sel, HVR_sel) 
             # ---------------------------------------------------------
             #Plot the data on the figure
-            #ax.semilogx(freq, HVSR, linewidth=1)
-            ax.loglog(freq, HVSR, linestyle="--", linewidth=0.5)
+            ax.loglog(freq, HVSR, linestyle="--", linewidth=0.4)
+            #ax.loglog(freq, HVSR, linewidth=0.5)
             #ax.loglog(freq, HVSR, linewidth=1, color="darkblue")
             #Plot the resonnence frequency
             #ax.axvline(x=f0, ymax=amp, color='grey',  linewidth=0.2, alpha=0.3)
@@ -313,7 +330,7 @@ for sta in FILEDICT:
     ax.grid(True, which="both", linestyle="--", alpha=0.5)
     #Set ylim of x-axis
     ax.set_xlim(xlims[0], xlims[1])
-#    ax.set_ylim(bottom = ymin)
+##    ax.set_ylim(bottom = ymin)
     ax.set_ylim(top = ymax)
     #disable ticks on  x-axis
     #Remove the ticks marks (small vertical lines) on the x-axis
@@ -321,6 +338,40 @@ for sta in FILEDICT:
     ax.tick_params(axis='both', labelsize=Figsize)
     ax.set_ylabel(ylabel, labelpad = pad, fontsize = Figsize)
     ax.set_xlabel(xlabel, labelpad = pad, fontsize = Figsize)
+#    #---------------------Plot the amplification ----------------------------
+#    Fampl= "AMPLIFICATIONDATA/LUCERNE/XJ.MUS05..HHc.res_ave.dat"
+#    #Load the data
+#    data = np.loadtxt(Fampl)
+#    freq_amp = data[:, 0]
+#    A_el = data[:, 1]               # elastic amplification
+#    std_el = data[:, 2]             # std in log scale
+#    A_in = data[:, 3]               # inelastic amplification
+#    std_in = data[:, 4]             # std in log scale
+#    N_el = data[:, 5]               # number of events (elastic)
+#    N_in = data[:, 6]
+#    #define another anxis
+#    ax2 = ax.twinx()
+#    #plot the amplification
+#    #ax2.plot(1./freq_amp, A_el, c='b')
+#    ax2.plot(1./freq_amp, A_in, c='b')
+#    ax2.plot(1./freq_amp, A_in * std_in, ls='--', c='b')
+#    ax2.plot(1./freq_amp, A_in / std_in, ls='--', c='b')
+#    #set label
+#    #ax2.set_ylabel("Elastic Amplification", color="b", labelpad = pad, fontsize = Figsize)
+#    ax2.set_ylabel("Inelastic amplification", color="b", labelpad = pad, fontsize = Figsize)
+#    #Formatting
+#    ax2.tick_params(axis="y", color="b", labelsize=Figsize)
+#    ax2.spines["right"].set_color("b")
+#    for label in ax2.get_yticklabels():
+#        label.set_color("b")
+#    #set the log-scale
+#    ax2.set_xscale("log")
+#    ax2.set_yscale("log")
+#    ax2.set_ylim(top = ymax)
+#    ax2.set_yscale("log")
+#    ax2.set_xlim(xlims[0], xlims[1])
+##    ax2.set_ylim(bottom = ymin)
+    #--------------------- End of the amplification  Plot----------------------------
     ##########################################################
     #Save the figure
     plt.savefig(figname, bbox_inches = 'tight', dpi = 300)

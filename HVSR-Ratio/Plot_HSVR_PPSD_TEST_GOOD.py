@@ -208,7 +208,7 @@ def calculate_hvr_psd(file_Z, file_1, file_2, xmlfile, amplification=None):
     # Compute H/V
     ## 4. Calculate H/V Ratio
     #h_mean = np.sqrt((mean_psd_1 + mean_psd_2) / 2)
-    h_mean    = np.sqrt(mean_psd_1**2 + mean_psd_2**2)
+    h_mean    = np.sqrt((mean_psd_1**2 + mean_psd_2**2)/4)
     hv_ratio = h_mean / mean_psd_z
     #compute the amplification---------------------------------------------------------
     if(amplification):

@@ -1,0 +1,10 @@
+#Look at this website
+
+https://pypi.org/project/hvseispy/
+
+############# This website too ##########
+https://github.com/JOchoa51/HVSeisPy
+######To activete the code ############
+conda create -n hvsr python=3.10
+conda activate hvsr
+pip install hvseispy
