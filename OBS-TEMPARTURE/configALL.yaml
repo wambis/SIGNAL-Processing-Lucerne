@@ -1,0 +1,76 @@
+#parameter for histogram plot
+#Path of the data
+ADCP_FILE_NAME_UP: 'DATASELECT/MUO2_UP_11_23.000'
+ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_11_23.000'
+#Discharge file name
+#FILE_DISCH: 'DATASELECT/Discharge_June_Dec2023_NEW.txt'
+FILE_DISCH: 'DATASELECT/Discharge-Lucerne-2023-2024.csv'
+#Discharge file name
+FILE_TURB: 'DATASELECT/ADCP2_DOWN_11_EchoAmp.txt'
+#Lake level File
+FILE_LAKE: 'DATASELECT/Lake-Level-Lucerne-2023-2024.csv'
+#METO FILE
+FILE_METEO: 'DATASELECT/DATA_ARRANGE_ALT.csv'
+#FILE_METEO: 'DATASELECT/DATA_ARRANGE_GES.csv'
+#Temperature file
+FILE_TEMPEB: 'DATASELECT/DataTemperatureMooringB.json'
+FILE_TEMPEA: 'DATASELECT/DataTemperatureMooringA.json'
+#Seimic file
+#mseedFile: 'DATASELECT/STATION09/XJ_MUS09_HH1-2024-01-01.mseed'
+#mseedFile: 'DATASELECT/STATION09/XJ_MUS09_HH1-2024-01-22.mseed'
+#
+#Response file
+Response_File: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+
+#Response_File: 'RESPOSE-FILE.XML/MUS07_response.xml'
+#Response_File: 'RESPOSE-FILE.XML/MUS06_response.xml'
+#
+#Plot Options 
+Remove_frame: True
+####################
+#
+##Set the time in the following format YYYY-MM-DD 
+#
+#
+TEMPFILES: {'muota-SingSta-03/infos/MUS03.aux', 'muota-SingSta-04/infos/MUS04.aux',
+           'muota-SingSta-05/infos/MUS05.aux','muota-SingSta-06/infos/MUS06.aux',
+           'muota-SingSta-08/infos/MUS08.aux', 'muota-SingSta-10/infos/MUS10.aux'}
+######################################################################
+#TEMPFILES: {'muota-SingSta-05/infos/MUS05.aux', 'muota-SingSta-08/infos/MUS08.aux', 'muota-SingSta-09/infos/MUS09.aux'}
+#windowing
+Windowing: False
+# New window
+time_start: "07:00"
+time_end:   "18:30"
+#Make your plot bigger
+plot_bigger: True
+#Parameter to plot Horizontal velocity, this actually the Horizontal velocty
+temperature: True
+fig_space: 0.25
+#fig_space: 0.32
+#fig_space: 0.4
+#set the figure size
+#fig_width: 12
+#fig_height: 11
+#fig_width: 12
+#fig_height: 13
+#Set the bandpass
+fig_width: 16
+#fig_width: 14
+fig_height: 14
+#bandpass: '35-40-85-100'
+#
+#bandpass: '5-10-120-130'
+bandpass: '0.02-0.022-200-1000'
+############################
+#bandpass: '6.25-8.3-40-50'
+#bandpass: '5-10-50-100'
+#Just removed instrument response
+#bandpass_spec: '0.02-0.022-200-1000'
+bandpass_spec: '0.02-0.022-1000-1500'
+#
+########################
+#bandpass: '60-70-100-120'
+#gist_heat_r
+######################
+PARAMSDICT: {'temperature': ['Temp (°C)', 'r'], 'temperature_down': ['Temp (°C)', 'm']}
