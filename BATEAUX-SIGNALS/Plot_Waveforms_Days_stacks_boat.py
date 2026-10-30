@@ -38,7 +38,6 @@ from matplotlib.dates import HourLocator
 from mhkit.dolfyn.adp import api
 from pandas.core.common import flatten
 ##################################
-from scipy.ndimage import gaussian_filter1d
 #from scipy.signal import spectrogram
 import scipy
 from scipy import interpolate
@@ -84,13 +83,11 @@ AphaDict = {0:'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e',
 #xy_coords = (0.0081, 0.90) # Good for Zoom of 2023-08-27
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #xy_coords = (0.0081, 0.85) # Good for Zoom of 2023-08-27
-
 #xy_coords = (0.0081, 0.87) # Good for Zoom of 2023-08-27
-####################################################
-#xy_coords = (0.0081, 0.90) # Good for 4 figures on 2023-10-07
-#######################################
-xy_coords = (0.0081, 0.925) # Good for 3 figures on 2023-10-07
-####################################################
+#
+#xy_coords = (0.0081, 0.90) # Good for Zoom of 2024-01-13
+
+xy_coords = (0.0081, 0.915) # Good for Discharge on 2023-09-22
 #xy_coords = (0.0081, 0.90) # Good for linear parameters Zoom of 2023-08-27
 #xy_coords = (0.0065, 0.73) # Coordinates (relative to axes) for the annotation
 
@@ -132,7 +129,7 @@ def hist_nbin(data):
 
 
 #Read the mseed file
-def read_mseed(Date_of_Day, FILE, xmlFile, bandpass, Pressure=None, resample=True):
+def read_mseed(Date_of_Day, FILE, xmlFile, bandpass, Pressure=None):
     #get the stream by reading the mseed file
     st      = read(FILE)
     #read the inventory
@@ -176,19 +173,21 @@ def read_mseed(Date_of_Day, FILE, xmlFile, bandpass, Pressure=None, resample=Tru
         #Title         = "%s %s %s %s  %s  %s"%(network, station, channel, dT, stime.split(".")[0], endtime.split(".")[0])
         #Title         = "%s  %s  %s"%(network, station, component)
         Title         = "%s.%s.%s"%(network, station, component)
-        #Resampling the data
-        if(resample==True):
-            tr.resample(sampling_rate = 1.0, window = 'hann', no_filter = True)
-            #The sampling rate is 1 second
-            date_rng  = pd.date_range(start= Date_of_Day, freq='1s', periods= tr.data.size)
-            #change the date_rng to numpy
-            time      = date_rng.to_numpy()
-        else:
-            #Get time array
-            time_array = tr.times()                   #relative time in seconds from start
-            start_time = tr.stats.starttime.datetime  #convert UTCDateTime to datetime
-            #absolute_times
-            time       = start_time + pd.to_timedelta(time_array, unit="s")
+        ##Resampling the data
+        tr.resample(sampling_rate = 1.0, window = 'hann', no_filter = True)
+        #tr.resample(sampling_rate = 2.0, window = 'hann', no_filter = True)
+        #################################
+        #The sampling rate is 1 second
+        date_rng  = pd.date_range(start= Date_of_Day, freq='1s', periods= tr.data.size)
+        #date_rng  = pd.date_range(start= Date_of_Day, freq='0.5s', periods= tr.data.size)
+       #wamba
+        #Create datetime array
+        ## Convert to pd.date_range (optional, if you want a fixed frequency index)
+#        date_rng = pd.date_range(start=Date_of_Day, periods=tr.data.size, freq=f"{tr.stats.delta}S")
+        #change the date_rng to numpy
+        time      = date_rng.to_numpy()
+        #print(tr.data.size, len(time))
+        #exit()
     #return(time, data, Title)
     return(time, tr, Title)
 
@@ -248,15 +247,14 @@ def Plot_fig(ax, time, data, ListDates, param, Plot_small= None, **PARAMSDICT):
     #get the start and the endtime
     tstart, tend =  start_endtime(time, ListDates)
     #Check the user need the plot to be bigger
-    #ax.plot(time, data, lw=0.7, linestyle ="-", color = color, alpha =0.9, label = param.title())
-    #ax.plot(time, data/max(data), lw=0.45, linestyle ="-", color = color, alpha =0.9, label =param)
     if(Plot_small):
-        #ax.plot(time, data, lw=0.45, linestyle ="-", color = color, alpha =0.8, label =param)
-        ax.plot(time, data, lw=0.6, linestyle ="-", color = color, alpha =0.8, label =param)
-        #ax.plot(time, data, lw=0.8, linestyle ="-", color = color, alpha =0.9, label =param)
+        #ax.plot(time, data, lw=0.45, linestyle ="-", color = color, alpha =0.8)
+        ax.plot(time, data, lw=0.3, linestyle ="-", color = color, alpha =0.8)
+        #ax.plot(time, data, lw=0.7, linestyle ="-", color = color, alpha =0.8)
+        #ax.plot(time, data, lw=0.8, linestyle ="-", color = color, alpha =0.9)
     else:
-        ax.plot(time, data, lw=2.0, linestyle ="-", color = color, alpha =1.0, label =param)
-        ax.plot(time, data, lw=12, linestyle ="-", color = color, alpha =0.5, label =param)
+        ax.plot(time, data, lw=2.0, linestyle ="-", color = color, alpha =1.0)
+        ax.plot(time, data, lw=12, linestyle ="-", color = color, alpha =0.5)
         #check if the user want to pot the Lake Level
     #if(param == "Lake_Level"):
     if(param == "Lake_Level" or param=="pressure_up"):
@@ -378,6 +376,104 @@ def PlotEnvelop(ax, time,  tr_filt, ListDates, param, Pressure= False, linewidth
     ax.set_ylabel(ylabel, labelpad = pad, fontsize = Figsize)
     #Free memory by  manually trigger garbage collection
     gc.collect()
+##############################################################
+def Plot_Temp1D_at_depths(ax, fig_object, DataDict, ListDates, param, **PARAMSDICT):
+    #get the colormap
+    #cmap       = plt.get_cmap('viridis')
+    #cmap       = plt.get_cmap('bwr')
+    cmap       = plt.get_cmap('Reds_r')
+    #get the parameters:
+    ylabel, clr, ix = PARAMSDICT[param]
+    ############################################
+    #get the time you need to plot
+    times      = set([time_i for depth in DataDict.keys() for time_i in DataDict[depth] if(time_i.split()[0] in ListDates)])
+    #####################################
+    times      = sorted(np.asarray(list(times)))
+    #get the depths
+    depths     = DataDict.keys()
+    #set the colors as function of depths
+    norm       = plt.Normalize(vmin=float(min(depths)), vmax=float(max(depths)))
+    #Convert the times into pandas time
+    times_pd   = pd.to_datetime(times)
+    #loop over the depths and the time to form a matrix
+    for k, depth in zip(range(len(depths)), depths):
+        #get the temperature at a specific depth
+        temperature   = np.asarray([DataDict[depth][time_i] for time_i in times])
+        #print(len(times_pd), len(temperature))
+        #exit()
+        ###################################
+        #ax.plot(times_pd, temperature, color=colors[i], label=f"{depth} m")
+        ax.plot(times_pd, temperature, color = cmap(norm(float(depth))))
+
+    #get the start and the endtime
+    #tstart, tend =  start_endtime(times, ListDates)
+    tstart, tend =  start_endtime(times_pd.to_numpy(), ListDates)
+    #Check the user need the plot to be bigger
+    #which axes object it should be near Calculate the colorbar position and size
+    bbox        = ax.get_position()
+    cbar_width  = 0.02
+    cbar_height = bbox.height
+    cbar_x      = bbox.x1 + 0.02
+    #cbar_x      = bbox.x1 + 0.09
+    #cbar_y      = bbox.y0
+    cbar_y      = bbox.y0 +0.01   #shift upward
+    #Create Colorbar's axis
+    cbar_ax     = fig_object.add_axes([cbar_x , cbar_y, cbar_width, cbar_height])
+    #ax.plot(time, data, lw=2.0, linestyle ="-", color = color, alpha =1.0, label =param)
+    #print(cbar_ax)
+    #exit()
+    #Write the text on the figure
+    ax.annotate(
+        AphaDict[ix],     # Text for the annotation
+        xy=xy_coords,                   # Coordinates (relative to axes) for the annotation
+        xycoords='axes fraction',    # Use axes fraction for positioning
+        fontsize=FsizeA,                 # Font size for the annotation
+        #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
+        bbox=dict(boxstyle='square', facecolor='white', edgecolor='k', alpha=0.5)  # Box style
+    )
+    #Add the legend
+    locations = verical_grid()
+    ax.xaxis.set_major_locator(locations)
+    #Make the grid of the axis
+    ax.grid(visible = True, axis = "both", alpha = 0.7)
+    #set the colorbar
+    sm   = plt.cm.ScalarMappable(cmap=cmap, norm= norm)
+    #cbar = plt.colorbar(sm, ax=ax)
+    #####################################
+    sm.set_array([])  # dummy for colorbar
+    #cbar = fig.colorbar(sm, cax=cbar_ax, format="%.2f")
+    cbar = fig_object.colorbar(sm, cax=cbar_ax)
+    cbar.set_label("Depth (m)")
+    #cbar.set_label("H (m)")
+    #Reverse the y-axis
+    ax.invert_yaxis()
+    #Invert the colorbar axis
+    cbar.ax.invert_yaxis()
+    #Reverse the tick labels
+    #Get current ticks
+    ticks = ax.get_yticks()
+    #Reverse only the labels (not the axis itself)
+    #labels = [str( '%.2f'%(val) ) for val in ticks[::-1]]
+    labels = [str( '%.1f'%(val) ) for val in ticks[::-1]]
+    ax.set_yticks(ticks)              # keep the same tick positions
+    ax.set_yticklabels(labels)
+    #ax.legend(loc="upper left", fontsize='large',  bbox_to_anchor=(0, 1), frameon=True, shadow=False)
+    #Set label
+    ax.set_ylabel(ylabel, labelpad = pad, fontsize = Figsize)
+    #ax.yticks(fontsize = fsize)
+    ax.tick_params(axis='y', labelsize= Figsize)
+    #Set ylim of x-axis
+    ax.set_xlim(tstart, tend)
+#    ax.set_ylim(-1.0, 1.0)
+#    ax.set_xlim(min(time), max(time))
+    #disable axis
+    ax.set_xticklabels([])
+    #Free memory by  manually trigger garbage collection
+
+
+
+
+
 
 ###############################################
 def Extract_BS2D(df, Tlist,  param, nrange=None):
@@ -637,53 +733,25 @@ def plot_spectrogram(ax, fig_object, time, tr, DatesList, Pressure= False, **PAR
     #NB: Window Duration = NFFT/f_s : f_s is the sampling frequency
     #NB: Step Duration  = (NFFT - noverlap)/f_s : f_s is the sampling frequency
     #NFFT = 256; noverlap = NFFT//2
-    NFFT=1024; noverlap = NFFT//2
+    #NFFT=1024; noverlap = NFFT//2
     #NFFT=512; noverlap = NFFT//2 # 50% overlap Good for long-periods signals
-    #NFFT=512; noverlap = 384  # 75% overlap for smooth transitions, Good for long-periods signals
+    NFFT=512; noverlap = 384  # 75% overlap for smooth transitions, Good for long-periods signals
     spec, freqs, times, img = ax.specgram(data, NFFT=NFFT, noverlap = noverlap, Fs=sampling_rate,
                                         #detrend='mean', mode ='psd', cmap = 'RdYlBu', xextent = extent)
                                         detrend='mean',  cmap = 'RdYlBu_r', xextent = extent)
 
     ##########
-    ##Convert frequency to period (avoid division by zero)
-    # Flip the y-axis properly by updating the image's extent
-    #Get the current extent
-    extent_ = img.get_extent()
-    #Swap only the y-limits
-    #reserve the y-axis
-    img.set_extent((extent_[0], extent_[1], extent_[3], extent_[2]))
-    #Optionally keep proper aspect ratio
-    ax.set_aspect('auto')
-    #Convert frequency axis to period (in seconds)
-    periods  = 1 / freqs
-    #Remove inf (for freq=0)
-    #Set custom y-axis ticks in periods
-    #periods = periods[np.isfinite(periods)]
-    periods  = np.where(np.isfinite(periods), periods, 0)
-########################################################################
-    yticks = np.linspace(freqs.min(), freqs.max(), 8)
-    yticks_periods = np.where(yticks != 0, 1 / yticks, 0)  # Replace inf with 0 or any placeholder
-    ax.set_yticks(yticks)
-    #ax.set_yticklabels([f"{p:.1f}" if p != 0 else "—" for p in yticks_periods])  # Optional: use "—" for zero
-    yticks_control = [f"{p:.1f}" if p != 0 else "\u200B" for p in yticks_periods]
-    ax.set_yticklabels(yticks_control[::-1])  # Optional: use "—" for zero
-    #ax.set_yticklabels(yticks_control)  # Optional: use "—" for zero
-    
-#
-#    # Set y-axis to log scale
-#    ax.set_yscale('log')
-#    # Create log-spaced frequency ticks (avoid 0!)
-#    yticks = np.geomspace(freqs.min() + 1e-1, freqs.max(), 8)
-#    # Convert to periods (1/f)
-#    yticks_periods = 1 / yticks
-#    # Apply custom ticks and labels (reversed if you flipped extent)
-#    ax.set_yticks(yticks)
-#    ax.set_yticklabels([f"{p:.1f}" for p in yticks_periods[::-1]])
-
+    ## Define the boundaries for the discrete intervals
+    #levels = MaxNLocator(nbins=4).tick_values(spec.min(), spec.max())
+    ## Create a BoundaryNorm object
+    #norm = BoundaryNorm(levels, ncolors=256, clip=True)
     #get the minimum and the maximum of yaxis
     ymin, ymax = ax.get_ylim() 
     xmin, xmax = ax.get_xlim() 
     #get the coordinate of the point, where to write the text
+#   xp, yp     = xy_point(xmin, xmax,ymin, ymax)
+    #Write the text on the figure
+#   ax.annotate(AphaDict[ix] , xy=(xp, yp), fontsize = f_size)
     #Add the colorbar using the figure's method,telling which mappable we're talking about and
     #Write the text on the figure
     ax.annotate(
@@ -714,13 +782,6 @@ def plot_spectrogram(ax, fig_object, time, tr, DatesList, Pressure= False, **PAR
     #set the colorbar annotation
     if(Pressure):
         #fig_object.colorbar(img, cax = cbar_ax, label = r'Power $(\mathrm{ dB \ ref\ Pa^2/Hz})$', format="%+2.f")
-        #img.set_clim(vmin=-20, vmax=+20)
-        img.set_clim(vmin=-50, vmax=+20)
-        # Flip the image vertically
-        #im.set_origin('lower')
-        #bottom, top = ax.get_ylim()
-        #ax.set_ylim(top, bottom)
-        #img.set_origin('lower')
         fig_object.colorbar(img, cax = cbar_ax, label = r'$\mathrm{dB \ re\ 1Pa^2/Hz }$', format="%+2.f")
     else:
         #fig_object.colorbar(img, cax = cbar_ax, label = r'Power $(\mathrm{dB \ ref \ m^2s^{-4}/Hz})$', format="%+2.f")
@@ -756,8 +817,7 @@ def plot_spectrogram(ax, fig_object, time, tr, DatesList, Pressure= False, **PAR
     #set the y-axis as logarithm scale
 #    ax.set_yscale('log')
 #    ax.set_ylim(ymin, ymax)
-    #ax.set_ylabel(ylabel, labelpad = pad, fontsize = Figsize)
-    ax.set_ylabel("Period (s)", labelpad = pad, fontsize = Figsize)
+    ax.set_ylabel(ylabel, labelpad = pad, fontsize = Figsize)
     #disable ticks on  x-axis
     ax.set_xticklabels([])
 
@@ -977,8 +1037,9 @@ def Func_PPSD(ax, fig_object, ListmseedFiles, fmxl, period_limit, Pressure=False
         #img.set_clim(vmin=-500, vmax= -100)
         img.set_clim(vmin=-160, vmax= -60)
     else:
-        #img.set_clim(vmin=-160, vmax= -100)
-        img.set_clim(vmin=-140, vmax= -100)
+        img.set_clim(vmin=-160, vmax= -100)
+        #img.set_clim(vmin=-140, vmax= -100)
+        
         #img.set_clim(vmin=-144, vmax= -96)
         #img.set_clim(vmin=-130, vmax= -100)
         #fig_object.colorbar(img, cax = cbar_ax, label ='Power ('+r'$\mathrm{dB \ re \ 1 m^2/s^{4}/Hz}$'+')', format="%+2.f",
@@ -1060,23 +1121,8 @@ def plot_seismic_power(ax, time, tr, DatesList, Pressure=False, **PARAMSDICT):
     time_new, ENER_ = inter1D(times, ENER_, time)
     #############################
     ENRER_db        = 10 * np.log10(ENER_)
-    #Replaces the last two with the previous two
-    #bins_per_day    = 673
-#    days = 2
-#    bins_per_day = len(ENRER_db)/days
-#    #ENRER_db_cleaned = ENRER_db.copy()
-#    print(len(ENRER_db), ENRER_db.shape)
-#    ###################################
-#    for d in range(days):
-#        end = int(d * bins_per_day)
-#        #start = d * bins_per_day
-#        #end = start + bins_per_day
-#        # Replace last 2 bins with the previous 2
-#        if end - 2 >= 0 and end <= len(ENRER_db):
-#            #ENRER_db[end-2:end] = ENRER_db[end-4:end-2]
-#            ENRER_db[ end -2 :end] = ENRER_db[end -4: end -2]
     ##Plot Seismic power energy ###########
-    ax.plot(time, ENRER_db, lw=6.0, linestyle ="-", color = 'grey', alpha =0.8)
+    ax.plot(time, ENRER_db, lw=8.0, linestyle ="-", color = 'grey', alpha =0.8)
     ax.plot(time, ENRER_db, lw=0.8, linestyle ="-", color = color, alpha =1.0)
     #Set label
     if(Pressure==True):
@@ -1578,6 +1624,9 @@ temperature_down  =  Fig_params['temperature_down']
 #get the Thermistors temperature
 Temperature2D_MA  = Fig_params['Temperature2D_MA']
 Temperature2D_MB  = Fig_params['Temperature2D_MB']
+#get temperature parameters
+Temp1D_at_diff_depths_MA  = Fig_params['Temp1D_at_diff_depths_MA']
+Temp1D_at_diff_depths_MB  = Fig_params['Temp1D_at_diff_depths_MB']
 Temperature_AVG   = Fig_params['Temperature_AVG']
 #Grab the bandpass
 bandpass          = Fig_params['bandpass']
@@ -1658,8 +1707,6 @@ DictDate     = set()
 stream       = Stream()
 #stream of spectrogram
 stream_spec = Stream()
-#####
-time_spec = np.array([]) 
 #set the pressure variable here to be same nature a pressure_waveform
 Pressure     = pressure_waveform
 #loop over the mseedFiles List
@@ -1682,12 +1729,9 @@ for ix,  mseedFile in zip(range(len(mseedFiles)), sorted(mseedFiles)):
     #add trace to a stream
     stream += tr
     #check you want to plot the spectrum
-    #time_s, tr_s, Title = read_mseed(DAYDATE, mseedFile, Response_File, bandpass_spec, Pressure, resample= False)
     if(spectrogram):
         time, tr_spec, Title = read_mseed(DAYDATE, mseedFile, Response_File, bandpass_spec, Pressure)
-        #time_s, tr_spec, Title = read_mseed(DAYDATE, mseedFile, Response_File, bandpass_spec, Pressure, resample= False)
-        stream_spec  += tr_spec
-        #time_spec    =  np.concatenate((time_spec, time_s))
+        stream_spec += tr_spec
     #grap the Date
     DictDate.add(DAYDATE)
 #print(stream)
@@ -1730,14 +1774,18 @@ if(waveform):
     #tr_filt.filter('lowpass', freq=0.05, corners=2, zerophase=True)
     #tr_filt.filter('lowpass', freq=0.1, corners=4, zerophase=True) #Good for Turbidity
     #tr_filt.filter('lowpass', freq=0.016, corners=2, zerophase=True)
-##   # tr_filt.filter('lowpass', freq=1.0/3.0, corners=2, zerophase=True)
+#    tr_filt.filter('lowpass', freq=1.0/200.0, corners=2, zerophase=True)
     Plot_fig(axs[ix], time_tr, tr_filt.data * 1e+6, DictDate, param, Plot_small= True, **PARAMSDICT)
     ###############################################
     #Plot_fig(axs[ix], time_tr, stream[0].data * 1e+6 / max(stream[0].data * 1e+6), DictDate, param, Plot_small= True, **PARAMSDICT)
     #set the limit
-#%%%%%%%%%%%%%%%Good for Boat %%%%%%%%%%%%%%
+    axs[ix].set_ylim(-0.3, 0.3) #Good for MUS03, HH1 2023-10-02
+
+#%%%%%%%%%%%%%%%Good for Discharge %%%%%%%%%%%%%%
+    #axs[ix].set_ylim(-0.17, 0.17)
+#%%%%%%%%%%%%%%%Good for Wind event %%%%%%%%%%%%%%
+    #axs[ix].set_ylim(-5.5, 5.5)
     #axs[ix].set_ylim(-6, 6)
-    axs[ix].set_ylim(-7, 7)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #axs[ix].set_ylim(-5, 5)
     #axs[ix].set_ylim(-5, 5) #MUS05
@@ -1773,7 +1821,6 @@ if(pressure_waveform):
     #Plot_fig(axs[ix], time, trace.data, list(DictDate), param, **PARAMSDICT)
     Plot_fig(axs[ix], time_tr, stream[0].data, DictDate, param, Plot_small= True, **PARAMSDICT)
     #Zomm on the plot
-    axs[ix].set_ylim(-20, 20)
 #    axs[ix].set_ylim(-7.5, 7.5)
 #    axs[ix].set_axisbelow(False)  # Prevents the grid and axes from staying behind plots
 #    axs[ix].spines['bottom'].set_zorder(15)  # Ensures x-axis is drawn on top
@@ -1800,12 +1847,11 @@ if(spectrogram):
     ##get the parameter, the index of the corresponding axis, and the color
     _ , color, ix    = PARAMSDICT[param]
     #Plot the figure by calling the plotting function of 2D Matrix
+    #plot_spectrogram(axs[ix], fig, trace.data, list(DictDate), Pressure, **PARAMSDICT)
     plot_spectrogram(axs[ix], fig, time_tr, stream_spec[0], DictDate, Pressure, **PARAMSDICT)
-    #plot_spectrogram(axs[ix], fig, time_spec, stream_spec[0], DictDate, Pressure, **PARAMSDICT)
     #zoom in the spectrogram
     #axs[ix].set_ylim(0, 0.2)
-#    axs[ix].set_ylim(0, 0.3)
-    axs[ix].set_ylim(0, 0.5)
+    axs[ix].set_ylim(0, 0.3)
 
 if(PPSD_spec):
     #set the parameter
@@ -1815,15 +1861,16 @@ if(PPSD_spec):
     _ , color, ix    = PARAMSDICT[param]
     #Plot the figure by calling the plotting function of 2D Matrix
     Func_PPSD(axs[ix], fig, mseedFiles, Response_File, period_lim, Pressure, **PARAMSDICT) 
+    #get the limit
+    ymin, ymax  = axs[ix].get_ylim()
     #set y-limit
     if(pressure_waveform):
-        axs[ix].set_ylim(1, 110) 
+        #axs[ix].set_ylim(1, 110) 
+        axs[ix].set_ylim(ymin, 110) 
     if(waveform):
-        axs[ix].set_ylim(5, 110) 
-#    axs[ix].set_ylim(5, 110)
-#Good for seismic signal
-     #axs[ix].set_ylim(1e-1, 110)
-#    axs[ix].set_ylim(1, 110) 
+        axs[ix].set_ylim(ymin, 110) #good for pressure signal
+        #axs[ix].set_ylim(1, 110) 
+
 
 if(seismic_power):
     #set the parameter
@@ -1832,18 +1879,16 @@ if(seismic_power):
     #get the parameter, the index of the corresponding axis, and the color
     _ , color, ix    = PARAMSDICT[param]
     #Plot the seismic energy
-    tr_filt= stream[0].filter('lowpass', freq=0.1, corners=2, zerophase=True) #Good for pressure signal
-    #tr_filt= stream[0].filter('lowpass', freq=1.0/20.0, corners=2, zerophase=True) #Good for pressure signal
+    tr_filt= stream[0].filter('lowpass', freq=0.1, corners=2, zerophase=True) #Good for Turbidity
+    #tr_filt= stream[0].filter('lowpass', freq=1.0/20.0, corners=2, zerophase=True) #Good for Turbidity
     plot_seismic_power(axs[ix], time_tr, tr_filt, DictDate, Pressure, **PARAMSDICT)
-#    plot_seismic_power(axs[ix], time_tr, stream[0], DictDate, Pressure, **PARAMSDICT)
     #set y-limit
     if(pressure_waveform):
         axs[ix].set_ylim(-20.5, 21) #good for pressure signal
     if(waveform):
         ymin, ymax  = axs[ix].get_ylim()
-        axs[ix].set_ylim(-150, ymax) #good for pressure signal
-
-#DictDate = ["2023-10-22", "2023-10-23"]
+        #axs[ix].set_ylim(-160, ymax) #good for others signal
+        axs[ix].set_ylim(-167, ymax) #good for 2023-10-02 seismic signal
 #Plot the wind and the seimsic power together
 if(wind_seismic_power):
     #set the parameter
@@ -2046,6 +2091,21 @@ if(Temperature2D_MB):
    #Plot the figure by calling the plotting function of 2D Matrix
    Plot_Temp2D(axs[ix],fig, time, DictDate, data2D, depths,  **PARAMSDICT)
 
+if(Temp1D_at_diff_depths_MA):
+   param                      = "Temp1D_at_diff_depths_MA"
+   #get the parameter, the index of the corresponding axis, and the color
+   _ , color, ix              = PARAMSDICT[param]
+   #Plot the figure by calling the plotting function
+   Plot_Temp1D_at_depths(axs[ix], fig, data_tempA, DictDate, param, **PARAMSDICT)
+
+if(Temp1D_at_diff_depths_MB):
+   param            = "Temp1D_at_diff_depths_MB"
+   #get the parameter, the index of the corresponding axis, and the color
+   _ , color, ix              = PARAMSDICT[param]
+   #Plot the figure by calling the plotting function
+   Plot_Temp1D_at_depths(axs[ix], fig, data_tempB, DictDate, param, **PARAMSDICT)
+
+
 if(Temperature_AVG):
    param            = "Temperature_AVG"
    #De-comment this if you want to plot ADCP temparature
@@ -2223,11 +2283,6 @@ if(dlnEcho_DOWN):
     #Plot_fig2D(axs[ix], fig, df_down, time, DictDate, Matrix2D,ADCP_DOWN_HEIGTH_FROM_LAKEBED, param, rframe= None, **PARAMSDICT)
 
     Plot_fig2D(axs[ix], fig, df_down, time, Matrix2D, DictDate, ADCP_DOWN_HEIGTH_FROM_LAKEBED,  ADCP_DOWN=True, rframe="top" , **PARAMSDICT)
-    #set the limit
-    #get the value from the y-axis
-    ymin, ymax = axs[ix].get_ylim()
-    axs[ix].set_ylim(4, ymax)
-    #axs[ix].set_ylim(4, 23)
 #set the x-label
 #plot linear dlnEcho
 if(dlnEcho_1D):
@@ -2314,35 +2369,100 @@ time_2 = pd.Timestamp('%s 11:50'%(DAYDATE))
 
 
 #######Good of  new zoom ########
-TimeList_local_times =['6:49','7:09', '08:49','09:09', '09:49', '11:09', '11:15', '11:49', '12:09', '12:11','13:48', '13:49',
-           '14:09','14:11', '15:48','15:49', '17:09', '17:49', '18:09', '18:16']
+time_11 = pd.Timestamp('%s 07:58'%(DAYDATE))
+time_22 = pd.Timestamp('%s 11:50'%(DAYDATE))
+#for ax in axs:
+#    ax.axvline(time_11, color='r',   lw=1.2, linestyle='--', alpha=0.8)
+#    ax.axvline(time_22, color='grey',lw=1.2, linestyle='--', alpha=0.8)
 
 
-#TimeList_UTC =['4:49','5:09', '06:49','07:09', '07:49', '09:09', '09:15', '09:49', '10:09', '10:11','11:48', '11:49',
-#           '12:09','12:11', '13:48','13:49', '15:09', '15:49', '16:09', '16:16']
+#######Local time boats schedule  ########
+#TimeList_local_times =[('6:49','7:09'), ('08:49','09:09'), ('09:49', '11:09'), ('11:15', '11:49'), ('12:09', '12:11'),('13:48', '13:49'),
+#           ('14:09','14:11'), ('15:48','15:49'), ('17:09', '17:49'), ('18:09', '18:16')]
+#
+
+
+TimeList_UTC =[('4:49', '5:09',1.8),  ('06:49', '07:09',2),    ('07:49','09:09', 4.8), ('09:15', '09:49', 4),  
+               ('10:09','10:11', 4.2), ('11:48', '11:49',5.2), ('13:00','13:02',1.8), 
+               ('13:48', '13:49',1.2), ('15:09', '15:49',1.2), ('16:09','16:16',4.0)]
+#('09:49', 4), ('10:09',3.2), ('10:11', 4.2),('11:48',5), ('11:49',5.2), ('12:09',3.2),('12:11',1.8), 
 
 TimeList_UTC_S ={('06:05',1.2), ('06:30',1.8),('07:09',2), ('07:49',5.5), ('09:09', 4.8), ('09:49',4), ('11:00',4),('11:48',5), 
                  ('12:49',5.2), ('12:11',1.8),('13:49',1.2), ('15:09',2.2), ('16:35',5.5), ('16:50',4)}
 
 TimeList_UTC_P ={('06:05',5), ('06:30',7.5),('07:09',4), ('07:49',2.0), ('09:09', 9.0), ('09:49',7.5), ('11:00',6),('11:48',11), 
                  ('12:49',12), ('12:11',5),('13:49',5), ('15:09',4), ('16:35',8), ('16:50',12)}
-###############################################
-if(waveform):
-    TimeList = TimeList_UTC_S
-else:
-    TimeList = TimeList_UTC_P
-#for ti in TimeList_UTC_P:
-for item in TimeList:
-    ti, yi  = item
-    time_p = pd.Timestamp('%s %s'%(ti, DAYDATE))
-    #axs[0].plot(time_p, yi, 'ro')
-    axs[0].plot(time_p, yi, 'bo', alpha = 0.7)
-    #write a text 
-    axs[0].text(time_p, yi + 0.3, ti, fontsize=8, color="b", alpha= 0.7)
-    #axs[0].plot(time_p, 5, 'ro')
-    
+#################################################
+#if(waveform):
+#    TimeList = TimeList_UTC_S
+#else:
+#    TimeList = TimeList_UTC_P
+##############################
+TimeList     = TimeList_UTC
+#set the ypoint
+ypoint  = 7; ytext = 10
+##############
+#ypoint  = 0.15 ; ytext = 0.175
+#Delta_y (ytext -ypoint) must be around 0.026
+#ypoint  = 0.18 ; ytext = 0.206
 
-    #ax.axvline(time_22, color='grey',lw=1.2, linestyle='--', alpha=0.8)
+##for ti in TimeList_UTC_P:
+for item, ki in zip(TimeList, range(len(TimeList))):
+    #ti, yi, _       = item
+    arrival_time    = item[0]
+    departure_time  = item[1]
+    ##################################################
+    time_arrive     = pd.Timestamp('%s %s'%(arrival_time, DAYDATE))
+    time_depart     = pd.Timestamp('%s %s'%(departure_time, DAYDATE))
+    #print(time_p)
+    #print(type(time_p))
+    time_left_ariv  = time_arrive  - pd.Timedelta(minutes=30)
+    #time_right_dprt = time_depart  + pd.Timedelta(minutes=5)
+    time_right_dprt = time_depart  - pd.Timedelta(minutes=30)
+    #axs[0].plot(time_p, yi, 'bo', alpha = 0.7)
+    #plot the arrival time
+    if(ki==0):
+        axs[0].plot(time_arrive, ypoint, 'o',
+            markerfacecolor='red',
+            markeredgecolor='black',
+            markeredgewidth=1.5,
+            alpha=0.7,
+            label="Vessel arrival")
+    else:
+        axs[0].plot(time_arrive, ypoint, 'o',
+            markerfacecolor='red',
+            markeredgecolor='black',
+            markeredgewidth=1.5,
+            alpha=0.7)
+    #write the  arrival time on the figure
+    axs[0].text(time_left_ariv, ytext, arrival_time, fontsize=8, color="red", alpha= 0.7)
+    #write a text 
+    #plot the departure time
+    if(ki==0):
+        axs[0].plot(time_depart, -1 * ypoint, 'o',
+            markerfacecolor='blue',
+            markeredgecolor='black',
+            markeredgewidth=1.5,
+            alpha=0.7,
+            label="Vessel departure")
+    else:
+        axs[0].plot(time_depart, -1 * ypoint, 'o',
+            markerfacecolor='blue',
+            markeredgecolor='black',
+            markeredgewidth=1.5,
+            alpha=0.7)
+    #write the  departure time on the figure
+    if(ki==4 or ki==9):
+        #ytext_new = ytext - ytext * 0.2
+        time_right_dprt_new = time_depart  + pd.Timedelta(minutes=10)
+        #axs[0].text(time_right_dprt_new, -1 * ytext_new, departure_time, fontsize=8, color="b", alpha= 0.7)
+        axs[0].text(time_right_dprt_new, -1 * ytext, departure_time, fontsize=8, color="b", alpha= 0.7)
+    else:
+        axs[0].text(time_right_dprt, -1 * ytext, departure_time, fontsize=8, color="b", alpha= 0.7)
+    #axs[0].text(time_p, yi + 0.3, ti, fontsize=8, color="b", alpha= 0.7)
+#Set the legend
+axs[0].legend(loc="best", fontsize=12)
+#axs[0].legend(loc="upper right", fontsize=12)
 
 
 #window selection
