@@ -20,14 +20,28 @@ FILE_TEMPE: 'DATASELECT/DataTemperatureMooringB.json'
 #mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-23.mseed'
 #mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed'
 #mseedFile: 'MUO_2023-10-23_BH.mseed'
-#mseedFile: 'MUO_2023-10-23_HH.mseed'
-#mseedFile: 'MUO_2024-01-01.mseed'
 #mseedFile: 'MUO_2023-10-07_HH.mseed'
-mseedFile_Land: 'LANDMUO_DATA/MUO_2023-10-23_BH.mseed'
+####################################################
+#mseedFile_Land: 'LANDMUO_DATA/MUO_2023-10-23_BH.mseed'
+#mseedFile_Land: 'LANDMUO_DATA/MUO.CH_2024-04-27.mseed'
+#mseedFile_Land: 'LANDMUO_DATA/MUO.CH_2024-03-29.mseed'
+#mseedFile_Land: 'LANDMUO_DATA/MUO.HH_2024-03-29.mseed'
+#Earthquake
+mseedFile_Land: 'LANDMUO_DATA/MUO_2024-01-01.mseed'
+#mseedFile_Land: 'LANDMUO_DATA/MUO.BH_2024-03-29.mseed'
 ###################################
-mseedFiles_OBS: ['DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed',
-                  'DATASELECT/STATION03/XJ_MUS03_HH3-2023-10-23.mseed',
-                  'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-23.mseed']
+#mseedFiles_OBS: ['DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed',
+#                  'DATASELECT/STATION03/XJ_MUS03_HH3-2023-10-23.mseed',
+#                  'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-23.mseed']
+##########################################################################
+
+mseedFiles_OBS: ['DATASELECT/STATION05/XJ_MUS05_HH1-2024-01-01.mseed']
+#mseedFiles_OBS: ['DATASELECT/STATION05/XJ_MUS05_HH1-2024-03-29.mseed']
+#mseedFiles_OBS: ['DATASELECT/STATION05/XJ_MUS05_HH2-2024-03-29.mseed']
+#mseedFiles_OBS: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-03-29.mseed']
+#mseedFiles_OBS: ['DATASELECT/STATION09/XJ_MUS09_HH2-2024-04-27.mseed']
+#mseedFiles_OBS: ['DATASELECT/STATION09/XJ_MUS09_HH1-2024-03-30.mseed']
+####################
 #mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-11-06.mseed'
 #mseedFile: 'DATASELECT/STATION07/XJ_MUS07_HH2-2023-10-23.mseed'
 #mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-20.mseed'
@@ -56,7 +70,7 @@ Response_File_OBS: 'RESPOSE-FILE.XML/xj-fdsn.xml'
 #Plot Options 
 Remove_frame: True
 ####################
-ADCP_DOWN: True
+ADCP_DOWN: False
 ADCP_UP: False
 #Plot Options
 #Mooring B
@@ -88,15 +102,15 @@ ADCP_DOWN_HEIGTH_FROM_LAKEBED: 23.0  #in meter
 #DO you want to visualize the data parameters? if yes set to True if no set to False
 ##Set the time in the following format YYYY-MM-DD 
 #
-STARTDATE: "2023-10-23"  
-ENDDATE:   "2023-10-23"
+#STARTDATE: "2023-10-23"  
+#ENDDATE:   "2023-10-23"
 #STARTDATE: "2023-10-20"  
 #ENDDATE: "2023-10-20"
-#STARTDATE: "2024-01-01"
-#ENDDATE: "2024-01-01"
+STARTDATE: "2024-01-01"
+ENDDATE: "2024-01-01"
 #
-#STARTDATE: "2023-10-07"
-#ENDDATE: "2023-10-07"
+#STARTDATE: "2024-03-29"
+#ENDDATE: "2024-03-29"
 #STARTDATE: "2023-11-06"  
 #####Set the ending time
 #ENDDATE: "2023-11-02"
@@ -124,7 +138,7 @@ temperature_down: False
 #2D Temperature
 Temperature2D: False
 #Do want to plot the Dischage into the basin ?
-discharge: True
+discharge: False
 #Lake Level
 Lake_Level: False
 #Do want to plot the Turbidity into the basin ?
@@ -141,7 +155,9 @@ tke: False
 #Tracking surface
 surface_tracking: False
 #Wind speed
-wind_speed: True
+wind_speed: False
+#Air Temperature
+TemperatureAir: False
 #Precipitation
 precipitation: False
 #plot the seismogram 
@@ -149,11 +165,12 @@ waveform: True
 #components you want to plot in order
 #Components: ['N', 'E', 'Z']
 Components: ['Z']
+#Components: ['E']
 pressure_waveform: False
 #Plot Envelop
 envelope: False
 #plot the seismic power
-seismic_power: True
+seismic_power: False
 #plot the seismic spectrogram?
 spectrogram: False
 #Do want to plot water density ?
@@ -168,9 +185,9 @@ PPSD_spec: True
 n_bin: 1
 #Provido the beam number on which you want to visualize the data correlation
 #Set the space between the figures
-#fig_space: 0.1
+fig_space: 0.02
 #fig_space: 0.15
-fig_space: 0.18
+#fig_space: 0.18
 #fig_space: 0.25
 #fig_space: 0.32
 #fig_space: 0.4
@@ -182,16 +199,24 @@ fig_height: 12
 #Set the bandpass
 #bandpass: '35-40-85-100'
 #
+#bandpass: '5-10-90-100' #use for JGR
+#bandpass_spec: '5-10-90-100' #use for JGR
+#bandpass: '0.2-0.5-2-3' #use for JGR
+#bandpass_spec: '0.2-0.5-2-3' #use for JGR
+bandpass: '30-35-70-75' #use for JGR
+#bandpass_spec: '30-35-70-75' #use for JGR
+#
 #Good Frequenci STATION01
 #bandpass: '38-45-80-100'
 #bandpass: '0.02-0.022-200-1000'
-bandpass: '6.25-8.3-40-50'  # for standing waves
+#bandpass: '6.25-8.3-40-50'  # for standing waves
 #bandpass: '0.5-1.0-200-1000'
 #Just removed instrument response
 bandpass_spec: '0.02-0.022-200-1000'
+#bandpass_spec: '5-6-10-1000'
 #
 ########################
 #bandpass: '60-70-100-120'
 #gist_heat_r
 ######################
-PARAMSDICT: {'wind_speed':['Wind speed (m/s)', 'teal'], 'envelope':['Envelope (m/s²)','m'], 'waveform': ['µm/s²','k'], 'pressure_waveform': ['Pressure (Pa)','k'], 'seismic_power': ['Power (dB)','k'] ,'spectrogram': ['Freq (Hz)','RdYlBu_r'], 'PPSD_spec': ['Period (s)','RdYlBu_r'], 'backscatter': ['Backscattering', 'jet'] , 'avg_BS': ['1D-Backscatter', 'green'],'pressure_up':['Pressure (bar)','blue'], 'pressure_down':['Pressure (bar)','blue'], 'velocity_up': ['Vel (m/s)', 'k'],'velocity_down': ['Vel (m/s)', 'k'], 'vertical_vel': ['Vel (m/s)', 'c'],'velocity2D_UP': ['Vel (m/s)', 'RdYlBu_r'], 'velocity2D_DOWN': ['Vel (m/s)', 'RdYlBu_r'], 'veldir2D_UP': ['degrees_CW_from_N', 'CMRmap'], 'veldir2D_DOWN': ['degrees_CW_from_N', 'CMRmap'], 'Lake_Level':['m a.s.l','blue'], 'discharge': ['m³/s','blueviolet'],'temperature_up': ['Temp (°C)', 'r'], 'temperature_down': ['Temp (°C)', 'r'],'Temperature2D': ['Temp (°C)', 'Reds'], 'surface_tracking': ['Bottom Track (m)', 'b'],   'tke': ['TKE (J/Kg)', 'pink'],  'wind_direction':['Wind-Dir (°C)', 'k'], 'Atm_pressure_QFE': ['Atm_Pressure (bar)','seagreen'],  'Atm_pressure_QFF': ['Atm_Pressure (bar)','royalblue'],  'precipitation': ['Precipitation (mm)','blue']}
+PARAMSDICT: {'Atm_pressure_QFF': ['Patm (hPa)','royalblue'] , 'Atm_pressure_QFE': ['Patm (hPa)','seagreen'],  'wind_speed':['Wind speed (m/s)', 'teal'], 'TemperatureAir':['Air Temp (°C)', 'r'], 'envelope':['Envelope (m/s²)','m'], 'waveform': ['ACC (µm/s²)','k'], 'pressure_waveform': ['Pressure (Pa)','k'], 'seismic_power': ['Power (dB)','k'] ,'spectrogram': ['Freq (Hz)','RdYlBu_r'], 'PPSD_spec': ['Period (s)','RdYlBu_r'], 'backscatter': ['Backscattering', 'jet'] , 'avg_BS': ['1D-Backscatter', 'green'],'pressure_up':['Pressure (bar)','blue'], 'pressure_down':['Pressure (bar)','blue'], 'velocity_up': ['Vel (m/s)', 'k'],'velocity_down': ['Vel (m/s)', 'k'], 'vertical_vel': ['Vel (m/s)', 'c'],'velocity2D_UP': ['Vel (m/s)', 'RdYlBu_r'], 'velocity2D_DOWN': ['Vel (m/s)', 'RdYlBu_r'], 'veldir2D_UP': ['degrees_CW_from_N', 'CMRmap'], 'veldir2D_DOWN': ['degrees_CW_from_N', 'CMRmap'], 'Lake_Level':['m a.s.l','blue'], 'discharge': ['m³/s','blueviolet'],'temperature_up': ['Temp (°C)', 'r'], 'temperature_down': ['Temp (°C)', 'r'],'Temperature2D': ['Temp (°C)', 'Reds'], 'surface_tracking': ['Bottom Track (m)', 'b'],   'tke': ['TKE (J/Kg)', 'pink'], 'wind_direction':['Wind-Dir (°C)', 'k'], 'precipitation': ['Precipitation (mm)','blue']}

@@ -1,0 +1,148 @@
+#parameter for histogram plot
+#Path of the data
+ADCP_FILE_NAME_UP: 'DATASELECT/MUO2_UP_11_23.000'
+ADCP_FILE_NAME_DOWN: 'DATASELECT/MUO2_DOWN_11_23.000'
+#Discharge file name
+FILE_DISCH: 'DATASELECT/Discharge_June_Dec2023_NEW.txt'
+#METO FILE
+FILE_METEO: 'DATASELECT/DATA_ARRANGE_ALT.csv'
+#FILE_METEO: 'DATASELECT/DATA_ARRANGE_GES.csv'
+#Temperature file
+FILE_TEMPE: 'DATASELECT/DataTemperatureMooringA.json'
+#
+#
+#Seimic file
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-27.mseed'
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH1-2023-08-28.mseed'
+#######
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-23.mseed'
+#mseedFileP: 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-23.mseed'
+####
+#mseedFile: 'DATASELECT/STATION03/XJ_MUS03_HH2-2023-08-28.mseed'
+#mseedFileP: 'DATASELECT/STATION03/XJ_MUS03_HDH-2023-08-28.mseed'
+#
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-04-27.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH2-2024-04-27.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH1-2024-04-27.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HDH-2024-04-27.mseed']
+##
+#mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HH3-2023-09-22.mseed',
+#              'DATASELECT/STATION03/XJ_MUS03_HH2-2023-09-22.mseed',
+#              'DATASELECT/STATION03/XJ_MUS03_HH1-2023-09-22.mseed']
+#              #'DATASELECT/STATION03/XJ_MUS03_HDH-2023-09-22.mseed']
+
+  #mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HH3-2023-11-14.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HH2-2023-11-14.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HH1-2023-11-14.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HDH-2023-11-14.mseed']
+  #mseedFiles: ['DATASELECT/STATION03/XJ_MUS03_HH3-2023-10-07.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HH2-2023-10-07.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HH1-2023-10-07.mseed',
+  #              'DATASELECT/STATION03/XJ_MUS03_HDH-2023-10-07.mseed']
+  #
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-03-29.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH2-2024-03-29.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH1-2024-03-29.mseed']
+#              #'DATASELECT/STATION05/XJ_MUS05_HDH-2024-03-29.mseed']
+#
+
+mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH1-2024-03-29.mseed']
+
+#mseedFiles: ['DATASELECT/STATION09/XJ_MUS09_HH3-2024-01-04.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HH2-2024-01-04.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HH1-2024-01-04.mseed',
+#              'DATASELECT/STATION09/XJ_MUS09_HDH-2024-01-04.mseed']
+#
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-03-26.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH2-2024-03-26.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH1-2024-03-26.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HDH-2024-03-26.mseed']
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-02-25.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH2-2024-02-25.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HH1-2024-02-25.mseed',
+#              'DATASELECT/STATION05/XJ_MUS05_HDH-2024-02-25.mseed']
+
+  #mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH3-2024-04-08.mseed',
+  #              'DATASELECT/STATION05/XJ_MUS05_HH2-2024-04-08.mseed',
+  #              'DATASELECT/STATION05/XJ_MUS05_HH1-2024-04-08.mseed',
+  #              'DATASELECT/STATION05/XJ_MUS05_HDH-2024-04-08.mseed']
+  #
+#mseedFiles: ['DATASELECT/STATION05/XJ_MUS05_HH2-2024-03-29.mseed',
+#                  'DATASELECT/STATION05/XJ_MUS05_HH1-2024-03-29.mseed',
+#                  'DATASELECT/STATION05/XJ_MUS05_HH3-2024-03-29.mseed']
+#  
+##############  
+#mseedFile_Land: 'LANDMUO_DATA/MUO_2023-10-23_BH.mseed'
+#mseedFile_Land: 'LANDMUO_DATA/MUO_2023-10-23_HH.mseed'
+###########
+#mseedFile_Land: 'LANDMUO_DATA/MUO.CH_2023-09-22.mseed'
+mseedFile_Land: 'LANDMUO_DATA/MUO.HH_2024-03-29.mseed'
+#mseedFile_Land: 'LANDMUO_DATA/MUO.BH_2024-03-29.mseed'
+#Response file
+#XJ_MUS03_HDH-2023-11-24.mseed
+Response_File_OBS: 'RESPOSE-FILE.XML/xj-fdsn.xml'
+#
+#Land based station Response file
+Response_File_Land: 'LANDMUO_DATA/MUO_2023-10-23.xml'
+#
+############################
+plot_loglog: True
+#Plot Options 
+#Mooring B
+Remove_frame: True
+#Visualize wavelet transform
+wavelet_transform: False
+#DO you want to visualize the data parameters? if yes set to True if no set to False
+##Set the time in the following format YYYY-MM-DD 
+#STARTDATE: "2023-11-02"  
+#ENDDATE: "2023-11-02"
+###
+#
+#STARTDATE: "2023-09-22"  
+STARTDATE: "2024-03-29"  
+#STARTDATE: "2023-10-23"  
+#STARTDATE: "2023-08-27"  
+#STARTDATE: "2023-08-28"  
+#STARTDATE: "2023-08-29"  
+#
+#STARTDATE: "2023-10-23"  
+#STARTDATE: "2023-10-20"
+#STARTDATE: "2023-10-30"
+#STARTDATE: "2023-11-06"
+#STARTDATE: "2023-11-02"  
+#####Set the ending time
+#ENDDATE: "2023-11-02"
+#Make your plot bigger
+plot_bigger: False
+#plot the seismogram 
+waveform: True
+FFT: True
+#Envelop 
+#Do want to plot water density ?
+#Provido the beam number on which you want to visualize the data correlation
+#Set the space between the figures
+fig_space: 0.1
+#fig_space: 0.15
+#fig_space: 0.25
+#set the figure size
+fig_width: 26
+fig_height: 12
+#
+#fig_width: 10
+#fig_height: 12
+#Set the bandpass
+#bandpass: '35-40-85-100'
+#
+#Good Frequency STATION03
+#bandpass: '40-45-80-100'
+#bandpass: '0.02-0.022-200-1000'
+bandpass: '0.006-0.01-100-550'
+#Just removed instrument response
+#bandpass_spec: '0.02-0.022-200-1000'
+#bandpass_spec: '0.0002-0.00022-200-10000'
+#
+########################
+#bandpass: '60-70-100-120'
+######################
+#Dictionary for parameter to plot
+PARAMSDICT: {'waveform': ['Acceleration PSD (m²/s⁴/Hz)','k'], 'FFT': ['Acceleration PSD (m²/s⁴/Hz)','k']}

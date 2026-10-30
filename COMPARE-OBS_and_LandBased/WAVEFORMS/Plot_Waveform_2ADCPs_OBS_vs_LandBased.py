@@ -60,10 +60,14 @@ AphaDict = {0:'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e',
             11:'l', 12: 'm',13: 'n',14:'o', 15:'p', 16: 'q'}
 #size for anotation
 f_size = 13
-Figsize = 12
+#Figsize = 12
+Figsize= 16
 pad = 10
+##Get the parameter for ytick
+fsize = 14
 #############
-xy_coords=(0.0089, 0.85)                   # Coordinates (relative to axes) for the annotation
+#xy_coords=(0.0089, 0.85)                   # Coordinates (relative to axes) for the annotation
+xy_coords=(0.0089, 0.83)                   # Coordinates (relative to axes) for the annotation
 ############################################
 
 def inter1D(x, y, x_new):
@@ -268,7 +272,7 @@ def read_mseed(Date_of_Day, FILE, xmlFile, comp, bandpass, Pressure = None):
     #remove mean and trend on the trace
     tr.detrend(type='demean')
     #Title  = "%s %s %s %s  %s  %s"%(network, station, channel, dT, stime.split(".")[0], endtime.split(".")[0])
-    Title         = "%s.%s.%s"%(network, station, chanel)
+    Title         = "%s.%s.%s"%(network, station, chanel[-1])
     ##Resampling the data
     tr.resample(sampling_rate = 1.0, window = 'hann', no_filter = True)
     #################################
@@ -634,7 +638,7 @@ def Plot_fig(ax, time, data, param, plot_bigger, label=None,  **PARAMSDICT):
         #ax.plot(time, data, lw=0.4, linestyle ="-", color = color, alpha =0.9, label = param.title())
         #ax.plot(time, data, lw=0.7, linestyle ="-", color = color, alpha =0.9, label = param.title())
         if(label):
-            ax.plot(time, data, lw=0.7, linestyle ="-", color = color, alpha =0.8, label = label)
+            ax.plot(time, data, lw=0.3, linestyle ="-", color = color, alpha =0.8, label = label)
             #ax.legend(loc="upper right",fontsize='x-large',bbox_to_anchor=(1, 1),frameon=False, shadow=False)
             #Second line on secondary Y-axis
             ax2 = ax.twinx()
@@ -647,7 +651,7 @@ def Plot_fig(ax, time, data, param, plot_bigger, label=None,  **PARAMSDICT):
             #ax2.set_yticklabels([])
             ax2.tick_params(axis='y', labelright=False, right=False)
         else:
-            ax.plot(time, data, lw=0.7, linestyle ="-", color = color, alpha =0.8)
+            ax.plot(time, data, lw=0.3, linestyle ="-", color = color, alpha =0.8)
 
     #Arrange for Lake Level
     #get the coordinate of the point, where to write the text
@@ -670,20 +674,18 @@ def Plot_fig(ax, time, data, param, plot_bigger, label=None,  **PARAMSDICT):
 
 
     #get the coordinate of the point, where to write the text
-#    xp, yp     = xy_point(xmin, xmax,ymin, ymax)
     #Write the text on the figure
-#    ax.annotate(AphaDict[ix] , xy=(xp, yp), fontsize = f_size)
-    ax.annotate(
-        AphaDict[ix],     # Text for the annotation
-        xy=   xy_coords,                   # Coordinates (relative to axes) for the annotation
-        #xy=(0.0089, 0.90),                   # Coordinates (relative to axes) for the annotation
-        #xy=(0.0089, 0.85),                   # Coordinates (relative to axes) for the annotation
-        #xy=(0.0089, 0.72),                   # Coordinates (relative to axes) for the annotation
-        xycoords='axes fraction',    # Use axes fraction for positioning
-        fontsize=16,                 # Font size for the annotation
-        #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
-        bbox=dict(boxstyle='square', facecolor='white', edgecolor='k', alpha=0.5)  # Box style
-    )
+#    ax.annotate(
+#        AphaDict[ix],     # Text for the annotation
+#        xy=   xy_coords,                   # Coordinates (relative to axes) for the annotation
+#        #xy=(0.0089, 0.90),                   # Coordinates (relative to axes) for the annotation
+#        #xy=(0.0089, 0.85),                   # Coordinates (relative to axes) for the annotation
+#        #xy=(0.0089, 0.72),                   # Coordinates (relative to axes) for the annotation
+#        xycoords='axes fraction',    # Use axes fraction for positioning
+#        fontsize=16,                 # Font size for the annotation
+#        #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
+#        bbox=dict(boxstyle='square', facecolor='white', edgecolor='k', alpha=0.5)  # Box style
+#    )
     #number of vertical lines for grid
     locations = verical_grid()
     ax.xaxis.set_major_locator(locations)
@@ -1043,7 +1045,6 @@ def Func_PPSD(ax, fig_object, Date_of_Day, fmseed, fmxl, comp, Pressure= None, *
     #This matches the new column added to Z.
     time_nums_extended  = np.append(time_nums, next_time_num)
     #time_nums_extended  = np.concatenate([[start_time_num], time_nums, [end_time_num]])
-
     #Meshgrid
     #Creates 2D coordinate arrays for time and period.
     #T.shape and P.shape both match Z_extended.shape
@@ -1060,8 +1061,8 @@ def Func_PPSD(ax, fig_object, Date_of_Day, fmseed, fmxl, comp, Pressure= None, *
 #    img.set_clim(-165, -90)
 #    ax.set_ylim(min(periods), 1e+2 * 7)
     #ax.set_ylim(1e-1 * 10, 1e+2 * 7)
-    ax.set_ylim(1e-2 * 6, 1e+2 * 7)
-    #ax.set_ylim(None, 1e+2 * 7)
+    #ax.set_ylim(1e-2 * 6, 1e+2 * 7)
+    ax.set_ylim(1e-1, 200)
     #Set axis limits explicitly (to avoid showing extra data outside the range)
     ax.set_xlim(time_nums_extended[0], time_nums_extended[-1])
     #######################
@@ -1079,42 +1080,60 @@ def Func_PPSD(ax, fig_object, Date_of_Day, fmseed, fmxl, comp, Pressure= None, *
     ax.set_yscale('log')
     #ax.set_ylabel("Period (s)")
     #Set label
-    ax.set_ylabel(ylabel, labelpad = pad, fontsize = Figsize)
     #Format the x-axis with dates
     ax.xaxis_date()
      #Add the colorbar using the figure's method,telling which mappable we're talking about and
     #which axes object it should be near Calculate the colorbar position and size
     bbox        = ax.get_position()
     #cbar_width  = 0.02
-    cbar_width  = 0.007
+    cbar_width  = 0.009
     cbar_height = bbox.height
     #cbar_x      = bbox.x1 + 0.02
-    cbar_x      = bbox.x1 + 0.007
+    cbar_x      = bbox.x1 + 0.009
     cbar_y      = bbox.y0
     #Create Colorbar's axis
     cbar_ax     = fig_object.add_axes([cbar_x , cbar_y, cbar_width, cbar_height])
     #check if pressure
     if(Pressure != None):
-        cbar = fig_object.colorbar(img, cax=cbar_ax,  pad=0.0007, label = r'PPSD $(\mathrm{ dB \ ref\ Pa^2/Hz})$', format="%+2.f")
+        cbar = fig_object.colorbar(img, cax=cbar_ax,  pad=0.0007, label = r'Power $(\mathrm{ dB \ ref\ Pa^2/Hz})$', format="%+2.f")
+        cbar.set_label(
+                    r'Power $(\mathrm{ dB \ ref\ Pa^2/Hz})$',
+                    fontsize=Figsize
+                    )
     else:
-        cbar = fig_object.colorbar(img, cax=cbar_ax,  pad=0.0007, label = r'PPSD $(\mathrm{dB \ ref \ m^2s^{-4}/Hz})$', format="%+2.f")
+        cbar = fig_object.colorbar(img, cax=cbar_ax,  pad=0.0007, label = r'Power $(\mathrm{dB \ ref \ m^2s^{-4}/Hz})$', format="%+2.f")
+        cbar.set_label(
+                    r'Power $(\mathrm{dB \ ref \ m^2s^{-4}/Hz})$',
+                    fontsize=Figsize
+                    )
      #ax.annotate(AphaDict[ix] , xy=(xp, yp), fontsize = f_size)
-    ax.annotate(
-        AphaDict[ix],     # Text for the annotation
-        #xy=(0.0089, 0.95),                   # Coordinates (relative to axes) for the annotation
-        #xy=(0.0089, 0.92),                   # Coordinates (relative to axes) for the annotation
-        xy=  xy_coords,                   # Coordinates (relative to axes) for the annotation
-        #xy=(0.0089, 0.72),                   # Coordinates (relative to axes) for the annotation
-        xycoords='axes fraction',    # Use axes fraction for positioning
-        fontsize=16,                 # Font size for the annotation
-        #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
-        bbox=dict(boxstyle='square', facecolor='white', edgecolor='k', alpha=0.5)  # Box style
-        )
+#    ax.annotate(
+#        AphaDict[ix],     # Text for the annotation
+#        #xy=(0.0089, 0.95),                   # Coordinates (relative to axes) for the annotation
+#        #xy=(0.0089, 0.92),                   # Coordinates (relative to axes) for the annotation
+#        xy=  xy_coords,                   # Coordinates (relative to axes) for the annotation
+#        #xy=(0.0089, 0.72),                   # Coordinates (relative to axes) for the annotation
+#        xycoords='axes fraction',    # Use axes fraction for positioning
+#        fontsize=16,                 # Font size for the annotation
+#        #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
+#        bbox=dict(boxstyle='square', facecolor='white', edgecolor='k', alpha=0.5)  # Box style
+#        )
     #####################
+    #Shift the first timestamp to midnight
+    start_midnight = datetime.combine(times[0].date(), datetime.min.time())
+    start_num      = mdates.date2num(start_midnight)
+    #Keep your original end time
+    end_num        = time_nums_extended[-1]
+    ax.set_xlim(start_num, end_num)
+    #########grid the figure ####################
     ax.grid(visible = True, axis = "x", alpha = 0.2)
     #Label size
     ax.tick_params(axis='both', labelsize=Figsize)
     #ax.set_ylim(1e-2, 1e3)
+    #Set label
+    ax.set_ylabel(ylabel, labelpad = pad, fontsize = Figsize)
+    #ticks size
+    plt.yticks(fontsize = fsize)
     #ax.set_ylabel([])
     #disable ticks on  x-axis
     ax.set_xticklabels([])
@@ -1124,7 +1143,7 @@ def Func_PPSD(ax, fig_object, Date_of_Day, fmseed, fmxl, comp, Pressure= None, *
 
 
 
-def plot_seismic_power(ax, tr, Date_of_Day, **PARAMSDICT):
+def plot_seismic_power(ax, tr,  Date_of_Day, Pressure=True, **PARAMSDICT):
     #speed up figure plot
     plt.style.use('fast')
     #get the value from the Dictionary
@@ -1186,6 +1205,13 @@ def plot_seismic_power(ax, tr, Date_of_Day, **PARAMSDICT):
          #bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.5)  # Box style
          bbox=dict(boxstyle='square', facecolor='white', edgecolor='k', alpha=0.5)  # Box style
     )
+    #Set label
+    if(Pressure==True):
+        #ax.set_ylabel(r'Power $(\mathrm{ dB \ ref\ Pa^2/Hz})$', labelpad = pad, fontsize = Figsize)
+        ax.set_ylabel(r'$\mathrm{dB \ re\ 1Pa^2/Hz }$', labelpad = pad, fontsize = Figsize)
+        #ax.set_ylabel('dB', labelpad = pad, fontsize = Figsize)
+    else:
+        ax.set_ylabel(r'$\mathrm{dB \ re \ 1 m^2/s^{4}/Hz}$', labelpad = pad, fontsize = Figsize)
     #number of vertical lines for grid
     locations = verical_grid()
     ax.xaxis.set_major_locator(locations)
@@ -1337,6 +1363,10 @@ pressure_up    = Fig_params['pressure_up']
 pressure_down  = Fig_params['pressure_down']
 #get the wind speed
 wind_speed     = Fig_params['wind_speed']
+#get the air Temperature
+TemperatureAir = Fig_params['TemperatureAir']
+#get the atmospheric pressure lot the 
+Atm_pressure_QFF = Fig_params['Atm_pressure_QFF']
 ##Grab the Temperature to visualize
 temperature_up = Fig_params['temperature_up']
 temperature_down= Fig_params['temperature_down']
@@ -1540,6 +1570,7 @@ fig, axs= plt.subplots(nfigs, 2, sharex = False, figsize= fig_size)
 
 #OBS_comps = {'Z': '1', 'N':'2', 'E': '3'}
 OBS_comps = {'Z': 'HH1', 'N':'HH2', 'E': 'HH3'}
+#OBS_comps = {'Z': 'HH2', 'N':'HH1', 'E': 'HH3'}
 
 #fig, axs  = plt.subplots(nfigs, 1, sharex = False, figsize = fig_size)
 #fig, axs  = plt.subplots(6, 1, sharex = False, figsize = fig_size)
@@ -1550,6 +1581,9 @@ OBS_comps = {'Z': 'HH1', 'N':'HH2', 'E': 'HH3'}
 if(envelope):
     #set the parameter
     param            = "envelope"
+
+    #print(bandpass,bandpass_spec)
+    #exit()
     #get the seismogram from mseedFile
     time_obs, tr_obs, Title_obs     = read_mseed(STARTDATE, mseedFile_OBS, Response_File_OBS, bandpass_spec)
     time_Land, tr_Land, Title_Land  = read_mseed(STARTDATE, mseedFile_Land, Response_File_Land, bandpass_spec)
@@ -1575,20 +1609,34 @@ if(waveform):
         time_obs, tr_obs, Title_obs = read_mseed(STARTDATE, mseedFile_OBS[comp_obs], Response_File_OBS, comp_obs[-1], bandpass_spec)
         #get the parameter, the index of the corresponding axis, and the color
         _ , color, ix               = PARAMSDICT[param]
+        #Apply lower pass filter
+        #tr_obs   = tr_obs.filter('lowpass', freq=0.05, corners=2, zerophase=True)
+        #tr_Land  = tr_Land.filter('lowpass', freq=0.05, corners=2, zerophase=True)
         #label        = Title
         for y_j in range(2):
             #Plot the landbased data
             #data  =  tr_filt.data * 1e+6
-            ############################################################################
-            if(y_j==0):
-                Plot_fig(axs[ix, y_j], time_Land, tr_Land.data * 1e+6, param, False,  **PARAMSDICT)
-            #tr_filt.filter('highpass', freq=0.2, corners=2, zerophase=True)
-            #data  =  tr.data * 1e+6
+            tle_obj = axs[ix, y_j].set_title('Land-based station: %s'%(Title_Land), loc='center', fontsize = Figsize, pad=None)
+            tle_obj.set_zorder(10)
             ############################################################################
             if(y_j==1):
-                Plot_fig(axs[ix, y_j], time_obs, tr_obs.data * 1e+6, param, False,  **PARAMSDICT)
+                Plot_fig(axs[ix, y_j], time_Land, tr_Land.data * 1e+6, param, False,  **PARAMSDICT)
+            #tr_filt.filter('highpass', freq=0.2, corners=2, zerophase=True)
                 #remove the y-label
                 axs[ix, y_j].set_ylabel(None)
+                #remove the ylabels
+                axs[ix, y_j].set_yticklabels([])
+            #data  =  tr.data * 1e+6
+            ############################################################################
+            if(y_j==0):
+                #set the title
+                if('1' in Title_obs):
+                    Title_obs = Title_obs[: -1] + 'Z'
+                tle_obj = axs[ix, y_j].set_title('OBS: %s'%(Title_obs), loc='center', fontsize = Figsize, pad=None)
+                tle_obj.set_zorder(10)
+                Plot_fig(axs[ix, y_j], time_obs, tr_obs.data * 1e+6, param, False,  **PARAMSDICT)
+            #set ylim
+            axs[ix, y_j].set_ylim(-75, 75)
     #Free memory for the time and data
     del time_Land, tr_Land, time_obs, tr_obs
 #######################################################
@@ -1634,14 +1682,14 @@ if(seismic_power):
             #data  =  tr_filt.data * 1e+6
             ############################################################################
             if(y_j==0):
-                plot_seismic_power(axs[ix, y_j], tr_Land, STARTDATE,  **PARAMSDICT)
+                plot_seismic_power(axs[ix, y_j], tr_Land, STARTDATE, Pressure= False, **PARAMSDICT)
                 #plot_seismic_power(axs[ix], tr, STARTDATE, **PARAMSDICT)
             #tr_filt.filter('highpass', freq=0.2, corners=2, zerophase=True)
             #data  =  tr.data * 1e+6
             ############################################################################
             if(y_j==1):
                 #Plot_fig(axs[ix, y_j], time_obs, tr_obs.data * 1e+6, param, False,  **PARAMSDICT)
-                plot_seismic_power(axs[ix, y_j], tr_obs, STARTDATE,  **PARAMSDICT)
+                plot_seismic_power(axs[ix, y_j], tr_obs, STARTDATE, Pressure= False, **PARAMSDICT)
                 #remove the y-label
                 axs[ix, y_j].set_ylabel(None)
         #Free memory for the time and data
@@ -1716,26 +1764,76 @@ if(PPSD_spec):
     for y_j in range(2):
         #Plot the landbased data
         ############################################################################
-        if(y_j==0):
+        if(y_j==1):
             ##Plot the figure by calling the plotting function of 2D Matrix
             #cbar = plot_spectrogram(axs[ix, y_j], fig, tr_Land, STARTDATE, **PARAMSDICT)
             cbar = Func_PPSD(axs[ix, y_j], fig, STARTDATE, mseedFile_Land, Response_File_Land, comp, **PARAMSDICT)
-            cbar.remove()
-        ############################################################################
-        if(y_j==1):
-            ##Plot the figure by calling the plotting function of 2D Matrix
-            #cbar =plot_spectrogram(axs[ix, y_j], fig, tr_obs, STARTDATE, **PARAMSDICT)
-            cbar=Func_PPSD(axs[ix, y_j], fig, STARTDATE, mseedFile_OBS[comp_obs], Response_File_OBS, comp_obs[-1], **PARAMSDICT)
-            #remove the y-label
             axs[ix, y_j].set_ylabel(None)
             #axs[ix, y_j].tick_params(axis='y', labelleft=False)  # Remove y-axis tick labels (graduations)
             #keep log gridlines for visual reference
             #axs[ix, y_j].yaxis.grid(True, which='both')
             axs[ix, y_j].set_yticklabels([])
+            #set the limi
+        ############################################################################
+        if(y_j==0):
+            ##Plot the figure by calling the plotting function of 2D Matrix
+            #cbar =plot_spectrogram(axs[ix, y_j], fig, tr_obs, STARTDATE, **PARAMSDICT)
+            cbar=Func_PPSD(axs[ix, y_j], fig, STARTDATE, mseedFile_OBS[comp_obs], Response_File_OBS, comp_obs[-1], **PARAMSDICT)
+            #remove the y-label
+            cbar.remove()
 #plot the wind velocity
 if(wind_speed):
     #get the Dischage data for the corresponding time
     param         = "wind_speed"
+    #get the wind speed data for the corresponding time
+    time, data    = Extract_database(d_mteo,  date_list, param)
+    #get the parameter, the index of the corresponding axis, and the color
+    _ , color, ix = PARAMSDICT[param]
+    #Plot the figure by calling the plotting function, plot_twinx
+    #label        = Title
+    for y_j in range(2):
+       #Plot the landbased data
+       ############################################################################
+       if(y_j==0):
+           Plot_fig(axs[ix, y_j], time, data, param, plot_bigger,  **PARAMSDICT)
+           ############################################################################
+       if(y_j==1):
+           Plot_fig(axs[ix, y_j], time, data, param, plot_bigger,  **PARAMSDICT)
+           #remove the y-label
+           axs[ix, y_j].set_ylabel(None)
+           axs[ix, y_j].tick_params(axis='y', labelleft=False)  # Remove y-axis tick labels (graduations)
+    #Free memory for the time and data
+    del time, data
+
+if(Atm_pressure_QFF):
+    #get the pressure atmospheric data for the corresponding time
+    param         = "Atm_pressure_QFF"
+    #get the Dischage data for the corresponding time
+    time, data    = Extract_database(d_mteo,  date_list, param)
+    #get the parameter, the index of the corresponding axis, and the color
+    _ , color, ix = PARAMSDICT[param]
+    #label        = Title
+    for y_j in range(2):
+       #Plot the landbased data
+       ############################################################################
+       if(y_j==0):
+           Plot_fig(axs[ix, y_j], time, data, param, plot_bigger,  **PARAMSDICT)
+           ############################################################################
+       if(y_j==1):
+           Plot_fig(axs[ix, y_j], time, data, param, plot_bigger,  **PARAMSDICT)
+           #remove the y-label
+           axs[ix, y_j].set_ylabel(None)
+           axs[ix, y_j].tick_params(axis='y', labelleft=False)  # Remove y-axis tick labels (graduations)
+    #Free memory for the time and data
+    del time, data
+
+
+
+#Plot the Air Temperature
+
+if(TemperatureAir):
+    #get the Air Temperature data for the corresponding time
+    param         = "TemperatureAir"
     #get the Dischage data for the corresponding time
     time, data    = Extract_database(d_mteo,  date_list, param)
     #get the parameter, the index of the corresponding axis, and the color
@@ -1755,6 +1853,7 @@ if(wind_speed):
            axs[ix, y_j].tick_params(axis='y', labelleft=False)  # Remove y-axis tick labels (graduations)
     #Free memory for the time and data
     del time, data
+
 ##Plot the Discharge
 if(discharge):
         #set the parameter
@@ -2110,12 +2209,13 @@ if(STARTDATE != ENDDATE):
 if(STARTDATE == ENDDATE):
     #axs.flatten()[-1].xaxis.set_major_locator(HourLocator())
     axs[-1,0].xaxis.set_major_formatter(DateFormatter('%H:%M'))
-    axs[-1,0].set_xlabel('Time (hour:minute) on %s'%(STARTDATE), fontsize = 6)
+    axs[-1,0].set_xlabel('Time (hour:minute) on %s'%(STARTDATE), fontsize = Figsize)
     ################################################
     #axs.flatten()[-2].xaxis.set_major_locator(HourLocator())
     axs[-1, 1].xaxis.set_major_formatter(DateFormatter('%H:%M'))
-    axs[-1, 1].set_xlabel('Time (hour:minute) on %s'%(STARTDATE), fontsize = 6)
-    figname   = "ADCP_%s_of_%s_TEST.png"%(basename, STARTDATE)
+    axs[-1, 1].set_xlabel('Time (hour:minute) on %s'%(STARTDATE), fontsize = Figsize)
+    #figname   = "ADCP_%s_of_%s.png"%(basename, STARTDATE)
+    figname   = "ADCP_%s_of_%s.pdf"%(basename, STARTDATE)
     #figname   = "ADCP_%s_of_%s_TEST_HH.png"%(basename, STARTDATE)
     #figname   = "ADCP_%s_of_%s.pdf"%(basename, STARTDATE)
 # Set the font size of yticks
@@ -2125,7 +2225,9 @@ if(STARTDATE == ENDDATE):
 #Make a rotation of xticks
 #plt.xticks(rotation=45)
 #Space between the subplots
-#plt.subplots_adjust(hspace = 0.08)
+# Reduce the space between the column
+plt.subplots_adjust(wspace = 0.08)
+#reduce the space between the raw
 plt.subplots_adjust(hspace = fig_space)
 
 #Align ylabel of the figure

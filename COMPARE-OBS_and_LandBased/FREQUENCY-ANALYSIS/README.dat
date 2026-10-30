@@ -1,0 +1,11 @@
+#Very Godd correlation between Wind and the Seismic energy at ALTDORF
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%Station MUS09 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+XJ_MUS09_HH2-2024-03-29.mseed    #Good wind event of 20 m/s, best double frequency
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%Station MUS05 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+XJ_MUS05_HDH-2024-03-29.mseed    #perfect correlation with wind 12 m/s, with good double Frequency
+
+#%%%%%%%%%%%%%%%%%%%%%% GOOD DISCHARGE at MUS03 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+XJ_MUS03_HDH-2023-09-22.mseed    #Very good Discharge
+XJ_MUS03_HDH-2023-11-14.mseed    #Good Discharge

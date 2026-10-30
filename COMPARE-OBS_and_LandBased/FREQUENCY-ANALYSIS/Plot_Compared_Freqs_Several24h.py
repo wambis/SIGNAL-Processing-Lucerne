@@ -59,6 +59,8 @@ AphaDict = {0:'(a)', 1: '(b)', 2: '(c)', 3: '(d)', 4: '(e)',
             11:'(l)', 12: '(m)',13: '(n)',14:'(o)', 15:'(p)', 16: '(q)'}
 #size for anotation
 size = 13
+#set the fontsize
+fsize = 22
 def InterSpline(Date_of_Day, t_in, d_in):
     #range the date for one day
     #date_rng  = pd.date_range(start= Date_of_Day, freq='1s', periods=3600)
@@ -183,7 +185,8 @@ def read_mseed(Date_of_Day, FILE, xmlFile, comp, bandpass, resampling=True, Pres
     #remove mean and trend on the trace
     tr.detrend(type='demean')
     #Title  = "%s %s %s %s  %s  %s"%(network, station, channel, dT, stime.split(".")[0], endtime.split(".")[0])
-    Title         = "%s.%s.%s"%(network, station, chanel)
+    #Title         = "%s.%s.%s"%(network, station, chanel)
+    Title         = "%s.%s"%(network, station)
     ##Resampling the data
     if(resampling):
             #The sampling rate is 1 second
@@ -727,12 +730,13 @@ def Plot_waveforms_freq(ax, freqs, data, comp, color, ylabel=None, plot_loglog=F
         legline.set_linewidth(4)
     #ax.set_ylabel(r'PSD $(\mathrm{m^2s^{-2}/Hz})$', labelpad = pad, fontsize = 14)
     #ax.set_ylabel(ylabel, labelpad = pad, fontsize = 14)
-    if(ylabel != None):
-        ax.set_ylabel(ylabel, labelpad = pad, fontsize = 22)
-        #ax.set_xlabel('Frequency (Hz) ', fontsize = 14)
-        ax.set_xlabel('Period (s) ', fontsize = 22)
+    #if(ylabel != None ):
+    if(ylabel != None or comp=='N'):
+        ax.set_ylabel(ylabel, labelpad = pad, fontsize = fsize)
+        #ax.set_xlabel('Frequency (Hz) ', fontsize = fsize)
+        ax.set_xlabel('Period (s) ', fontsize = fsize)
     #fontsize of the yticks
-    ax.tick_params(axis='both', labelsize=22)
+    ax.tick_params(axis='both', labelsize=fsize)
    # #number of vertical lines for grid
    # locations = verical_grid()
    # ax.xaxis.set_major_locator(locations)
@@ -740,8 +744,10 @@ def Plot_waveforms_freq(ax, freqs, data, comp, color, ylabel=None, plot_loglog=F
    # ax.grid(visible = True, axis = "both", alpha = 0.7)
     #plot the log scale
     #ax.set_xlim(0.001, 1.0)    #good for loglog scale
-#    ax.set_xlim(1, 600.0)    #good for loglog scale
-    ax.set_xlim(min(freqs), 1e+4)    #good for loglog scale
+#    ax.set_xlim(min(freqs), 1e+4)    #good for loglog scale
+    #ax.set_xlim(1e-3 * 8,  1e+4)    #good for loglog scale
+    ax.set_xlim(1e-3 * 8,  850)    #good for loglog scale
+#######################################
 #    ax.axvline(x= 6.3 * 1e+2, color='blue', linestyle=':', linewidth=1)
     #ax.set_xlim(min(freqs), 1e+3 *2)    #good for loglog scale
     #linear scale
@@ -1090,7 +1096,7 @@ waveform          = Fig_params['waveform']
 pressure_waveform = Fig_params['pressure_waveform']
 #Grab the bandpass
 bandpass          = Fig_params['bandpass']
-bandpass_spec     = Fig_params['bandpass_spec']
+#bandpass_spec     = Fig_params['bandpass_spec']
 #get the nbin
 n_bin             = Fig_params['n_bin']
 #Get the number of range 2D plot 
@@ -1244,21 +1250,36 @@ for ix,  mseedFile in zip(range(len(mseedFiles)), sorted(mseedFiles)):
     index_l                     = DICTAXIS[comp_Land] 
     color                       = DICTCOLOR[comp]
     ylabel_obs                  = DICTLABEL[comp]
-    ylabel_l                     = DICTLABEL[comp_Land]
+    ylabel_l                    = DICTLABEL[comp_Land]
     #Plot_waveforms_freq(axs[index], freqs, power, param, plot_loglog, **PARAMSDICT)
     #######################################################################################
     #Plot_waveforms_freq(axs[index_l], freqs_l,   power_l,  comp_Land, color, ylabel_l, plot_loglog)
     Plot_waveforms_freq(axs[index_l], freqs_l ,   power_l,  comp_Land, color, ylabel_l, plot_loglog)
+    #set the x-axis limit
+    #axs[index_l].set_xlim(1e-2 * 8, 1e+4)    #good for loglog scale
+#    axs[index_l].set_ylim(1e-7 *5, 1e-2)    #good for loglog scale
+    axs[index_l].set_ylim(1e-6, 1e+2)    #good on HH, for strong wind on 2024-03-29, loglog scale
+    #axs[index_l].set_ylim(1e-9, 1e+2)    #good on HH, for Discharge on 2023-09-22, loglog scale
     #######################################################################################
     Plot_waveforms_freq(axs[index_obs], freqs_obs, power_obs, comp,     color, ylabel_obs, plot_loglog)
+#    axs[index_obs].set_ylim(1e-4, 1e+3)    #good for loglog scale
+    axs[index_obs].set_ylim(1e-6, 1e+2)    #good for strong wind on 2024-03-29, loglog scale
+    #axs[index_obs].set_ylim(1e-9, 1e+2)    #good on HH, for Discharge on 2023-09-22, loglog scale
 
+#remove the y-label for land-based satation
+#axs[index_l].set_ylabel(None)
+#axs[index_l].get_yaxis().set_visible(False)
+axs[index_l].tick_params(axis='y', which='both', labelleft=False)
+
+#set title on the figure
+axs[index_obs].set_title('OBS:  %s'%(Title_obs), loc='center', fontsize = fsize, pad=None)
+axs[index_l].set_title('Land-based:  %s'%(Title_l), loc='center', fontsize = fsize, pad=None)
 
 
 #Aligned all the ylabels of the figure
-figname = "%s_%s"%(cmp_ , str(DAYDATE))
+figname = "Compared_Land_OBS_Freq_spec_%s_%s.pdf"%(cmp_ , str(DAYDATE))
 fig.align_ylabels()
 #Save the figure
-fig.savefig(figname, bbox_inches = 'tight', dpi = 300)
-
+fig.savefig(figname, bbox_inches = 'tight')
+#fig.savefig(figname, bbox_inches = 'tight', dpi = 300)
 ####################################################
-#################################################################
